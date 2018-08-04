@@ -1,0 +1,14 @@
+Options -Indexes
+ErrorDocument 404 /404.php
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/js/
+RewriteCond %{REQUEST_URI} !^/css/
+RewriteCond %{REQUEST_URI} !^/img/
+RewriteCond %{REQUEST_URI} !^/files/
+RedirectMatch 404 ^/js/.git
+RedirectMatch 404 ^/css/.git
+RedirectMatch 404 ^/img/.git
+RedirectMatch 404 ^/files/.git
+RedirectMatch 404 ^/config.php
+RewriteRule . index.php
+RewriteBase /
