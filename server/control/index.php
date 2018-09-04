@@ -47,8 +47,9 @@ $_CNTRL = Array(
     "api_get" => [
         "file" => "server/classes/ApiGet.php",
         "class" => "ApiGet",
-        "global" => ["Remainder", "DB"],
-        'html' => false
+        //"global" => ["Remainder", "DB"],
+        "ParametersInit" => false,
+        "html" => false
     ],
     "safe_load" => [
         "file" => "server/vendors/SafeLoad",

@@ -3,7 +3,7 @@
 interface dbConnect {
     public function connect();
     public function disconnect();
-    public function execute($sql_array,$count_rows,$parametrs);
+    public function execute($sql_array,$count_rows,$parameters);
 }
 
 class DbConnection
@@ -38,7 +38,7 @@ class DbConnection
                 $this->_con_ar["Url"] = $CONSTR["Url"];
         }
         else
-            throw new Exception('Not DB paramets');
+            throw new Exception('Not DB parameters');
 
         switch ($TYPE) {
             case "pg" :
@@ -50,7 +50,7 @@ class DbConnection
             case "wa" :
                 $this->_type = 10;
                 break;
-            case 'Mock':
+            case 'mo':
                 $this->_type = 11;
                 break;
             default :
@@ -62,20 +62,20 @@ class DbConnection
                 if(isset($this->_con_ar["Schema"]))
                     $param["schem"] = $this->_con_ar["Schema"];
                 include($DBPATH."pg.php");
-                $this->_db = new PG((isset($this->_con_ar["Host"]) ? "host=".$this->_con_ar["Host"] : "") .
-                    (isset($this->_con_ar["Port"]) ? " port=".$this->_con_ar["Port"] : "") .
-                    (isset($this->_con_ar["DB"]) ? " dbname=".$this->_con_ar["DB"] : "") .
-                    (isset($this->_con_ar["User"]) ? " user=".$this->_con_ar["User"] : "") .
-                    (isset($this->_con_ar["Password"]) ? " password=".$this->_con_ar["Password"] : "") .
+                $this->_db = new PG((isset($this->_con_ar["Host"]) ? "host=".$this->_con_ar["Host"] : "localhost") .
+                    (isset($this->_con_ar["Port"]) ? " port=".$this->_con_ar["Port"] : "5432") .
+                    (isset($this->_con_ar["DB"]) ? " dbname=".$this->_con_ar["DB"] : "postgres") .
+                    (isset($this->_con_ar["User"]) ? " user=".$this->_con_ar["User"] : "postgres") .
+                    (isset($this->_con_ar["Password"]) ? " password=".$this->_con_ar["Password"] : "12345") .
                     (isset($this->_con_ar["Options"]) ? " options='".$this->_con_ar["Options"]."'" : ""), $param);
                 $this->_ready = true;
                 break;
             case 1 :
                 $param = Array();
-                $param[] = isset($this->_con_ar["Host"]) ? $this->_con_ar["Host"] : "";
-                $param[] = isset($this->_con_ar["User"]) ? $this->_con_ar["User"] : "";
-                $param[] = isset($this->_con_ar["Password"]) ? $this->_con_ar["Password"] : "";
-                $param[] = isset($this->_con_ar["DB"]) ? $this->_con_ar["DB"] : "";
+                $param[] = isset($this->_con_ar["Host"]) ? $this->_con_ar["Host"] : "localhost";
+                $param[] = isset($this->_con_ar["User"]) ? $this->_con_ar["User"] : "root";
+                $param[] = isset($this->_con_ar["Password"]) ? $this->_con_ar["Password"] : "12345";
+                $param[] = isset($this->_con_ar["DB"]) ? $this->_con_ar["DB"] : "mysql";
                 $param[] = isset($this->_con_ar["Port"]) ? $this->_con_ar["Port"] : "3306";
                 include($DBPATH."mysql.php");
                 $this->_db = new MySQL($param);
@@ -83,7 +83,7 @@ class DbConnection
                 break;
             case 10 :
                 $param = Array();
-                $param[] = isset($this->_con_ar["Url"]) ? $this->_con_ar["Url"] : "";
+                $param[] = isset($this->_con_ar["Url"]) ? $this->_con_ar["Url"] : "localhost";
                 $param[] = isset($this->_con_ar["User"]) ? $this->_con_ar["User"] : "";
                 $param[] = isset($this->_con_ar["Password"]) ? $this->_con_ar["Password"] : "";
                 $param[] = isset($this->_con_ar["ConnectTimeout"]) ? $this->_con_ar["ConnectTimeout"] : 60;
@@ -96,8 +96,8 @@ class DbConnection
                 $this->_required[] = "Output";
                 break;
             case 11:
-                include ($DBPATH . 'Mock.php');
-                $this->_db = new Mock([]);
+                include ($DBPATH . 'mock.php');
+                $this->_db = new Mock();
                 break;
         }
     }

@@ -3,7 +3,7 @@
 class MySQL implements dbConnect
 {
     private $_con_string;
-    private $_connetion = false;
+    private $_connection = false;
 
     function __construct($CONSTR)
     {
@@ -13,30 +13,30 @@ class MySQL implements dbConnect
     public function connect()
     {
         try {
-            $this->_connetion = mysqli_connect($this->_con_string[0], $this->_con_string[1], $this->_con_string[2], $this->_con_string[3], $this->_con_string[4]);
-            if (!$this->_connetion) {
-                Route::errorLog("Don`t connect to DB\nConnetion sting: " . $this->_con_string);
+            $this->_connection = mysqli_connect($this->_con_string[0], $this->_con_string[1], $this->_con_string[2], $this->_con_string[3], $this->_con_string[4]);
+            if (!$this->_connection) {
+                Route::errorLog("Don`t connect to DB\nConnection sting: " . $this->_con_string);
                 return false;
             }
             return true;
         } catch (Exception $e) {
-            Route::errorLog("Don`t connect to DB\nConnetion sting: " . $this->_con_string . "\n" . $e->getMessage());
-            $this->_connetion = false;
+            Route::errorLog("Don`t connect to DB\nConnection sting: " . $this->_con_string . "\n" . $e->getMessage());
+            $this->_connection = false;
             return false;
         }
     }
 
     public function disconnect()
     {
-        if ($this->_connetion !== false)
-            return mysqli_close($this->_connetion);
+        if ($this->_connection !== false)
+            return mysqli_close($this->_connection);
     }
 
     public function execute($sql, $count_rows = 0, $param = Array())
     {
-        if ($this->_connetion === false)
+        if ($this->_connection === false)
             $this->connect();
-        if ($this->_connetion !== false) {
+        if ($this->_connection !== false) {
             if (is_array($param) && count($param)) {
                 $p = "";
                 foreach ($param as $item)
@@ -46,16 +46,16 @@ class MySQL implements dbConnect
                         $p .= "i";
                     else
                         $p .= "s";
-                $result = $this->mysqli_prepared_query($this->_connetion, $sql, $p, $param, $count_rows);
+                $result = $this->mysqli_prepared_query($this->_connection, $sql, $p, $param, $count_rows);
                 if ($result === false) {
-                    Route::errorLog("Error in sql: " . $sql . "\n" . mysqli_error($this->_connetion));
+                    Route::errorLog("Error in sql: " . $sql . "\n" . mysqli_error($this->_connection));
                     return [false];
                 }
                 return [true, $result];
             } else {
-                $r = mysqli_query($this->_connetion, $sql);
+                $r = mysqli_query($this->_connection, $sql);
                 if (!$r) {
-                    Route::errorLog("Error in sql: " . $sql . "\n" . mysqli_error($this->_connetion));
+                    Route::errorLog("Error in sql: " . $sql . "\n" . mysqli_error($this->_connection));
                     return [false];
                 }
                 $n = mysqli_num_rows($r);

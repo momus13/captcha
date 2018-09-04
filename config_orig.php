@@ -14,20 +14,21 @@ $_CONFIG = array(
         "AccessDeny" => 'server/html/403.html', // html file page access deny
         //"cache" => "/memory-fs/" // path to cache file
         "LogLevel" => 3, // Log level: 0 - only critical, 3 - maximum
-        "DateFormatLog" => "j.n.y G:i:s", // date format
+        "DateFormatLog" => "j.n.y G:i:s", // datetime format
         //"LogPath" => "/var/log/path/name" name and path to log, default ../logs/log.log
     ),
     "default" => array (
         "init" => "init", // start method
         "type" => "class", // class or function
         "config" => true, // send param config to construct class
-        "lettercase" => true, // convert to capital first letter from default class name
+        "LetterCase" => true, // convert to capital first letter from default class name
         "global" => [ // global param to method init
             "DB", "Session", "Remainder"
         ],
-        "maxdepth" => 10, // Maximum nesting controllers
+        "MaxDepth" => 10, // Maximum nesting controllers
         "html" => true,
         "lang" => "ru",
+        "ParametersInit" => true,
         "first" => "header", // controller name, for always first load from html, or false if not loaded
         "last" => "footer", // controller name, for always last load from html, or false if not loaded
     ),
@@ -44,7 +45,7 @@ $_CONFIG = array(
             "Required" => "required", // method return list of preset class required
             "Init" => "init", // method return list of preset class required
             "Class" => 'DbConnection', // class name
-            "Type" => 'pg', // DB type
+            "Type" => 'pg', // DB type (pg - PostgreSQL, my - mySQL, wa - webAPI, mo - Mock)
             "Host" => 'localhost', // server host
             "Port" => '5432', // port
             "User" => 'user', // user login
@@ -78,6 +79,8 @@ $_CONFIG = array(
     ),
     "api" => array(
         "default" => array(
+            "CountFigureX" => 5,
+            "CountFigureY" => 5,
         )
     )
 );

@@ -20,14 +20,14 @@ if (!isset($_CONFIG["default"])) // set default parameters for read controllers
     $_CONFIG["default"] = Array();
 if (!isset($_CONFIG["default"]["main"]))
     $_CONFIG["default"]["main"] = "main";
-if (!isset($_CONFIG["default"]["lettercase"]))
-    $_CONFIG["default"]["lettercase"] = true;
+if (!isset($_CONFIG["default"]["LetterCase"]))
+    $_CONFIG["default"]["LetterCase"] = true;
 if (!isset($_CONFIG["default"]["type"]))
     $_CONFIG["default"]["type"] = "class";
 if (!isset($_CONFIG["default"]["config"]))
     $_CONFIG["default"]["config"] = true;
-if (!isset($_CONFIG["default"]["maxdepth"]))
-    $_CONFIG["default"]["maxdepth"] = 10;
+if (!isset($_CONFIG["default"]["MaxDepth"]))
+    $_CONFIG["default"]["MaxDepth"] = 10;
 if (!isset($_CONFIG["default"]["global"]))
     $_CONFIG["default"]["global"] = ["DB", "Session", "Remainder"];
 if (!isset($_CONFIG["default"]["html"]))
@@ -36,12 +36,15 @@ if (!isset($_CONFIG["global"]["Auth"]["Redirect"]))
     $_CONFIG["global"]["Auth"]["Redirect"] = false;
 if (!isset($_CONFIG["default"]["lang"]))
     $_CONFIG["default"]["lang"] = "en";
+if (!isset($_CONFIG["default"]["ParametersInit"]))
+    $_CONFIG["default"]["ParametersInit"] = true;
 if (!isset($_CONFIG["global"]["LogLevel"]))
     $_CONFIG["global"]["LogLevel"] = 1;
 if (!isset($_CONFIG["global"]["LogPath"]))
     $_CONFIG["global"]["LogPath"] = __DIR__."/../logs/log.log";
 if (!isset($_CONFIG["global"]["DateFormatLog"]))
     $_CONFIG["global"]["DateFormatLog"] = "j.n.y G:i:s";
+
 
 
 $_console = isset($argv);
@@ -141,7 +144,7 @@ class Route
     public static function normalizeInclude($contrName, $param = Array()) {
         if(isset($contrName["methods"]) && is_array($contrName["methods"]) && !in_array($contrName["methods"], $_SERVER["REQUEST_METHOD"]))
             return 1;
-        $_cache = self::loadCacheControlles();
+        $_cache = self::loadCacheControllers();
         if ($_cache === false || !isset($_cache[$contrName])) {
             if (isset(self::$_conf["controllers"]) && is_array(self::$_conf["controllers"])) {
                 foreach (self::$_conf["controllers"] as $key => $val) {
@@ -186,10 +189,14 @@ class Route
             $_glob["global"] = self::$_conf["default"]["global"];
         else
             $_glob["global"] = Array();
+        if (isset($_cntrlArray[1]["ParametersInit"]) && is_bool($_cntrlArray[1]["ParametersInit"]))
+            $_glob["ParametersInit"] = $_cntrlArray[1]["ParametersInit"];
+        else
+            $_glob["ParametersInit"] = self::$_conf["default"]["ParametersInit"];
         if (isset($_cntrl[$contrName])) {
             if (isset($_cntrl[$contrName]["file"]) && is_string($_cntrl[$contrName]["file"])) {
                 self::$_depth++;
-                if (self::$_depth > self::$_conf["default"]["maxdepth"])
+                if (self::$_depth > self::$_conf["default"]["MaxDepth"])
                     self::globalError("Limit max depth : " . self::$_depth . ", call " . $_cntrl[$contrName]["file"]);
                 if (isset($_cntrl[$contrName]["type"]) && is_string($_cntrl[$contrName]["type"]))
                     $_t = $_cntrl[$contrName]["type"];
@@ -217,36 +224,39 @@ class Route
                     $_glob["alter"] = $_cntrl[$contrName]["alter"];
                 else
                     $_glob["alter"] = Array();
+                if (isset($_cntrl[$contrName]["ParametersInit"]) && is_bool($_cntrl[$contrName]["ParametersInit"]))
+                    $_glob["ParametersInit"] = $_cntrl[$contrName]["ParametersInit"];
                 self::loadControllersBefore($_glob, $_cntrl[$contrName], $param);
                 $_d = Array();
-                while ($_gstep = array_shift($_g)) {
-                    $lower_g = strtolower($_gstep);
-                    switch ($lower_g) {
-                        case "db" :
-                            if(count($_glob["db"]))
-                                self::loadDB($_glob["db"],$_d[$_gstep]);
-                            else {
-                                if (!isset(self::$_preset["db"]))
-                                    self::loadDB(self::$_conf["include"]["db"],self::$_preset["db"]);
-                                $_d[$_gstep] = &self::$_preset["db"];
-                            }
-                            break;
-                        case "alter" : // alter DB
-                            if(count($_glob["alter"])) {
-                                $_d[$_gstep] = Array();
-                                foreach ($_glob["alter"] as $k => $v)
-                                    self::loadDB($v,$_d[$_gstep][$k]);
-                            }
-                            break;
-                        case "remainder" :
-                            $_d[$_gstep] = $param;
-                            break;
-                        default: // standard preset class
-                            self::loadRequired(Array($lower_g));
-                            if(isset(self::$_preset[$lower_g]))
-                                $_d[$_gstep] = &self::$_preset[$lower_g];
+                if($_glob["ParametersInit"])
+                    while ($_gstep = array_shift($_g)) {
+                        $lower_g = strtolower($_gstep);
+                        switch ($lower_g) {
+                            case "db" :
+                                if(count($_glob["db"]))
+                                    self::loadDB($_glob["db"],$_d[$_gstep]);
+                                else {
+                                    if (!isset(self::$_preset["db"]))
+                                        self::loadDB(self::$_conf["include"]["db"],self::$_preset["db"]);
+                                    $_d[$_gstep] = &self::$_preset["db"];
+                                }
+                                break;
+                            case "alter" : // alter DB
+                                if(count($_glob["alter"])) {
+                                    $_d[$_gstep] = Array();
+                                    foreach ($_glob["alter"] as $k => $v)
+                                        self::loadDB($v,$_d[$_gstep][$k]);
+                                }
+                                break;
+                            case "remainder" :
+                                $_d[$_gstep] = $param;
+                                break;
+                            default: // standard preset class
+                                self::loadRequired(Array($lower_g));
+                                if(isset(self::$_preset[$lower_g]))
+                                    $_d[$_gstep] = &self::$_preset[$lower_g];
+                        }
                     }
-                }
                 if ($_t == "class") {
                     if (isset($_cntrl[$contrName]["class"]) && is_string($_cntrl[$contrName]["class"]))
                         $_cn = $_cntrl[$contrName]["class"];
@@ -266,7 +276,7 @@ class Route
                         }
                         if ($_cn == 'index')
                             self::globalError("Not set class for " . $_cntrl[$contrName]["file"]);
-                        if (self::$_conf["default"]["lettercase"])
+                        if (self::$_conf["default"]["LetterCase"])
                             $_cn = strtoupper(substr($_cn, 0, 1)) . substr($_cn, 1);
                     }
                     if (self::normalizeSimpleInclude($_cntrl[$contrName]["file"]) == 0) {
@@ -289,7 +299,10 @@ class Route
                         try {
                             if(!method_exists($_class,$_f))
                                 self::globalError("Not set method " . $_f . " in class \"" . $_cn . "\"");
-                            self::$_return[$contrName] = $_class->$_f($_d);
+                            if($_glob["ParametersInit"])
+                                self::$_return[$contrName] = $_class->$_f($_d);
+                            else
+                                self::$_return[$contrName] = $_class->$_f();
                         } catch (Exception $e) {
                             self::globalError("Error in method " . $_f . " in class \"" . $_cn . "\"\n " . $e->getMessage());
                         }
@@ -370,7 +383,7 @@ class Route
         return false;
     }
 
-    private static function loadCacheControlles() {
+    private static function loadCacheControllers() {
         $_p = (isset(self::$_conf["global"]["cache"]) ? self::$_conf["global"]["cache"] : self::$_path) . "cachecnt.php"; // path to cache file
         if (file_exists($_p)) {
             try {

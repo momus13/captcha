@@ -2,21 +2,13 @@
 
 class Mock implements dbConnect
 {
-    /**
-     * @var array
-     */
-    private $config = [];
-
-
 
     /**
      * Mock constructor.
      *
-     * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct()
     {
-        $this->config = $config;
     }
 
     /**
