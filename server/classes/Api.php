@@ -8,35 +8,19 @@ class Api {
     public function init($parameters) {
 //        global $pathRoot,$langs,$type_list,$color_list,$size_list,$sum_list;
 //        require_once $pathRoot.'config'.DIRECTORY_SEPARATOR.'default.php';
-        $count_figure_x = $this->_conf[""];
-        $count_figure_y = $this->_conf[""];
-        if($parameters['count_figure_x'] < $this->_conf["cnt_x_max"] && $parameters['count_figure_x'] > 1)
-            $count_figure_x=$parameters['count_figure_x'];
-        if($parameters['count_figure_y'] < $this->_conf["cnt_y_max"] && $parameters['count_figure_y'] > 1)
-            $count_figure_y=$parameters['count_figure_y'];
-        $count_figure_base=$count_figure_x*$count_figure_y;
-        if($parameters['max_extra_firure'] > 0 && $parameters['max_extra_firure']<($count_figure_base/2))
-            $max_extra_firure=$parameters['max_extra_firure'];
-        if($parameters['correct'] > 0 && $parameters['correct'] < 51)
-            $correct=$parameters['correct'];
-        if($parameters['block_size']>$blck_sz_min && $parameters['block_size']<$blck_sz_max)
-            $block_size=$parameters['block_size'];
-        if($parameters['quality'] > 19 && $parameters['quality'] < 51)
-            $quality=$parameters['quality'];
+        $count_figure_x = $parameters["CountFigureX"];
+        $count_figure_y = $parameters["CountFigureY"];
+        $count_figure_base = $count_figure_x * $count_figure_y;
+        $max_extra_figure = $parameters['MaxExtraFigure'];
+        $correct = $parameters['Correct'];
+        $block_size = $parameters['BlockSize'];
+        $quality = $parameters['Quality'];
+        $maybe_minus = $parameters['MayBeMinus'];
+        $maybe_zero = $parameters['MayBeZero'];
+        $min_answer = $parameters['MinAnswer'];
+        $max_answer = $parameters['MaxAnswer'];
+        $bodyc = $parameters['BodyColor'];
 
-        $maybe_minus = true;
-
-        if($parameters['maybe_zero'])
-            $maybe_zero=true;
-        if($parameters['min_answer'])
-            $min_answer=0;
-        if($parameters['max_answer'])
-            $max_answer=9;
-        if(is_array($parameters['bodyc']))
-        {
-            $bodyc=$parameters['bodyc'];
-            $bodyf='';
-        }
         if(is_string($parameters['bodyf']))
             $bodyf=$parameters['bodyf'];
         $my_color=1;
@@ -82,10 +66,10 @@ class Api {
         $reault_massive = array();
 
         $count_figure=$count_figure_base;
-        if($max_extra_firure>0)
-            $max_extra_firure=rand(0,$max_extra_firure);
+        if($max_extra_figure>0)
+            $max_extra_figure=rand(0,$max_extra_figure);
 
-        $count_figure+=$max_extra_firure;
+        $count_figure+=$max_extra_figure;
 
 
         // start questing generation
@@ -184,7 +168,7 @@ class Api {
                         $r1 += $this->all_figure($b1,$c1,$noautogif);
                     }
                     else
-                        $r1 = $count_figure_base+$max_extra_firure;
+                        $r1 = $count_figure_base+$max_extra_figure;
                 }
             }
             if($a)
@@ -207,7 +191,7 @@ class Api {
                         $r2 += $this->all_figure($b2,$c2,$noautogif);
                     }
                     else
-                        $r2 = $count_figure_base+$max_extra_firure;
+                        $r2 = $count_figure_base+$max_extra_figure;
 
                 }
             }
@@ -264,10 +248,10 @@ class Api {
             }
         }
 
-        if($max_extra_firure)
+        if($max_extra_figure)
         {
-            $count_figure=$count_figure_base+$max_extra_firure;
-            $c=$block_size*$count_figure_x/$max_extra_firure;
+            $count_figure=$count_figure_base+$max_extra_figure;
+            $c=$block_size*$count_figure_x/$max_extra_figure;
             for($i = $count_figure_base; $i < $count_figure; $i++)
             {
                 $size=$figures[rand(0,$count_size-1)];

@@ -80,7 +80,19 @@ $_CONFIG = array(
     "api" => array(
         "default" => array(
             "CountFigureX" => 5,
-            "CountFigureY" => 5,
+            "CountFigureY" => 3,
+            "MaxFigureX" => 9,
+            "MaxFigureY" => 9,
+            "MaxCorrect" => 50,
+            "MinBlockPixel" => 24,
+            "MaxBlockPixel" => 42,
+            "MinQuality" => 19,
+            "MaxQuality" => 51,
+            "MayBeMinus" => true,
+            "MayBeZero" => true,
+            "MinAnswer" => 0,
+            "MaxAnswer" => 9,
+            "BodyColor" => array(255,255,255),
         )
     )
 );
