@@ -81,28 +81,6 @@ class Session
         return $result;
     }
 
-    /**
-     * Псевдоним для _get
-     *
-     * @param $index
-     * @param null $default
-     * @return bool|null
-     */
-    public function get($index, $default = null)
-    {
-        return $this->_get($index, $default);
-    }
-
-    /**
-     * Вытащить роль из сессии
-     *
-     * @return bool
-     */
-    public function getRole()
-    {
-        return $this->_get(['old_session', 'web_prava']);
-    }
-
     function _set($index, $param)
     {
         if($this->_destroy)

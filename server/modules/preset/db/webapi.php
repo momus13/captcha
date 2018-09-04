@@ -8,7 +8,7 @@ class WebApi implements dbConnect
     private $_con_t;
     private $_timeout;
     private $_post;
-    private $_sssl_v;
+    private $_ssl_v;
     private $_salt;
     private $token=false;
     private $_out;
@@ -21,7 +21,7 @@ class WebApi implements dbConnect
         $this->_con_t = $CONSTR[3];
         $this->_timeout = $CONSTR[4];
         $this->_post = $CONSTR[5];
-        $this->_sssl_v = $CONSTR[6];
+        $this->_ssl_v = $CONSTR[6];
         $this->_salt = $CONSTR[7];
     }
 
@@ -73,7 +73,7 @@ class WebApi implements dbConnect
     {
         if (strlen($this->_url)) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->_sssl_v);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->_ssl_v);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_URL, $this->_url);
             curl_setopt($ch, CURLOPT_POST, $this->_post);

@@ -12,8 +12,8 @@ $_CNTRL = Array(
         "type" => "function",
     ],
     "auth" => [
-        "file" => "server/classes/Auth.php", // path to php file or dir (index.php)
-        "class" => "Auth", // name class, default name == filename or dirname
+        "file" => "server/classes/Auth.php", // path to php file or directory (index.php)
+        "class" => "Auth", // name class, default name == filename or directory name
         "main" => "init", // start method
         "type" => "class", // class or function
         "config" => true, // send Config
@@ -35,10 +35,19 @@ $_CNTRL = Array(
             "Session"
         ]
     ],
-    "test" => [
-        "file" => "server/modules/test.php",
-        "type" => "function",
-        "global" => ["Remainder", "Core"],
+    "api" => [
+        "file" => "server/classes/Api.php",
+        "class" => "Api",
+        "global" => [],
+        "before" => ["api_get"],
+        "config" => false,
+        "html" => false,
+        "methods" => ["GET"] // http method request on upper case, default All methods
+    ],
+    "api_get" => [
+        "file" => "server/classes/ApiGet.php",
+        "class" => "ApiGet",
+        "global" => ["Remainder", "DB"],
         'html' => false
     ],
     "safe_load" => [
@@ -50,6 +59,6 @@ $_CNTRL = Array(
         ],
         "before" => [ // controller for rights checking
         ],
-        'html' => false
+        "html" => false
     ]
 );

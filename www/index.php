@@ -1,5 +1,7 @@
 <?php
 
+// RM Version 1.0.1
+
 if (!file_exists("config.php")) { // Load config
     error_log("Bad loading config file");
     http_response_code(500);
@@ -8,13 +10,13 @@ if (!file_exists("config.php")) { // Load config
 
 include('config.php');
 
-if (!isset($_CONFIG["global"]) || !isset($_CONFIG["global"]["Path"])) { // Test global setings
+if (!isset($_CONFIG["global"]) || !isset($_CONFIG["global"]["Path"])) { // Test global settings
     error_log("Bad config file, not set global path");
     http_response_code(500);
     exit;
 }
 
-if (!isset($_CONFIG["default"])) // set default parametrs for read controllers
+if (!isset($_CONFIG["default"])) // set default parameters for read controllers
     $_CONFIG["default"] = Array();
 if (!isset($_CONFIG["default"]["main"]))
     $_CONFIG["default"]["main"] = "main";
@@ -38,6 +40,9 @@ if (!isset($_CONFIG["global"]["LogLevel"]))
     $_CONFIG["global"]["LogLevel"] = 1;
 if (!isset($_CONFIG["global"]["LogPath"]))
     $_CONFIG["global"]["LogPath"] = __DIR__."/../logs/log.log";
+if (!isset($_CONFIG["global"]["DateFormatLog"]))
+    $_CONFIG["global"]["DateFormatLog"] = "j.n.y G:i:s";
+
 
 $_console = isset($argv);
 if (isset($_CONFIG["global"]["LogStream"]))
@@ -125,7 +130,7 @@ class Route
         if(self::$_console) {
             $f = fopen(self::$_conf["global"]["LogPath"], 'a');
             if ($f) {
-                fwrite($f, date("j.n.y G:i:s ").$text."\n");
+                fwrite($f, date(self::$_conf["global"]["DateFormatLog"])." ".$text."\n");
                 fclose($f);
             }
         }
@@ -134,6 +139,8 @@ class Route
     }
 
     public static function normalizeInclude($contrName, $param = Array()) {
+        if(isset($contrName["methods"]) && is_array($contrName["methods"]) && !in_array($contrName["methods"], $_SERVER["REQUEST_METHOD"]))
+            return 1;
         $_cache = self::loadCacheControlles();
         if ($_cache === false || !isset($_cache[$contrName])) {
             if (isset(self::$_conf["controllers"]) && is_array(self::$_conf["controllers"])) {
@@ -141,7 +148,7 @@ class Route
                     $_cntrl = self::loadMap($val, $key, false);
                     if(self::loadController($_cntrl, $contrName, $param)!==false) {
                         self::saveCacheControllers($contrName, $val);
-                        return;
+                        return 2;
                     }
                 }
                 self::globalError("Not found controller : " . $contrName);
@@ -151,6 +158,7 @@ class Route
             $_cntrl = self::loadMap($_cache[$contrName], "Cache", false);
             self::loadController($_cntrl, $contrName, $param);
         }
+        return 0;
     }
 
     private static function loadController($_cntrlArray, $contrName, $param) {
@@ -233,7 +241,7 @@ class Route
                         case "remainder" :
                             $_d[$_gstep] = $param;
                             break;
-                        default: // standart preset class
+                        default: // standard preset class
                             self::loadRequired(Array($lower_g));
                             if(isset(self::$_preset[$lower_g]))
                                 $_d[$_gstep] = &self::$_preset[$lower_g];
@@ -335,7 +343,7 @@ class Route
     }
 
     private static function saveCacheControllers($controller, $fileName) {
-        $_p = (isset(self::$_conf["global"]["cache"]) ? self::$_conf["global"]["cache"] : self::$_path) . "cachecnt.php"; // path to cachefile
+        $_p = (isset(self::$_conf["global"]["cache"]) ? self::$_conf["global"]["cache"] : self::$_path) . "cachecnt.php"; // path to cache file
         if (!file_exists($_p)) {
             $f = fopen($_p, 'w');
             if ($f) {
@@ -363,7 +371,7 @@ class Route
     }
 
     private static function loadCacheControlles() {
-        $_p = (isset(self::$_conf["global"]["cache"]) ? self::$_conf["global"]["cache"] : self::$_path) . "cachecnt.php"; // path to cachefile
+        $_p = (isset(self::$_conf["global"]["cache"]) ? self::$_conf["global"]["cache"] : self::$_path) . "cachecnt.php"; // path to cache file
         if (file_exists($_p)) {
             try {
                 include($_p);
@@ -456,7 +464,7 @@ class Route
         foreach ($map as $link => $route) {
             if (self::normalizeUrl($link) == $_tmpUrl) {
                 if (is_array($route)) {
-                    if (isset($route["map"]) && is_bool($route["map"]) && $route["map"] && isset($route["file"]) && is_string($route["file"])) { // loadind next map
+                    if (isset($route["map"]) && is_bool($route["map"]) && $route["map"] && isset($route["file"]) && is_string($route["file"])) { // loading next map
                         return self::routing($urlArray, self::loadMap($route["file"], $_tmpUrl), $redirectError, $private);
                     } else
                         return self::routing($urlArray, $route, $redirectError, $private);
@@ -470,7 +478,7 @@ class Route
                         $next = true;
                         if (!self::$_preset["session"]->_isset(self::$_conf["global"]["Login"])) { // Not auth in private mode
                             if (isset(self::$_conf["global"]["Auth"]["Controller"])) {
-                                if (self::normalizeInclude(self::$_conf["global"]["Auth"]["Controller"], $urlArray) == 0) {
+                                if (self::normalizeInclude(self::$_conf["global"]["Auth"]["Controller"], $urlArray) === 0) {
                                     if (self::$_return[self::$_conf["global"]["Auth"]["Controller"]] === true) {
                                         $next = false;
                                         if(!self::$_preset["session"]->_isset(self::$_conf["global"]["Login"]))
@@ -491,7 +499,7 @@ class Route
                             }
                         }
                     }
-                    if (self::normalizeInclude($route, $urlArray) == 0)
+                    if (self::normalizeInclude($route, $urlArray) === 0)
                         return true;
                     else {
                         if(self::$_conf["global"]["LogLevel"]>1)
@@ -529,7 +537,7 @@ class Route
 
     private static function loadDB(&$_conf,&$_db) {
         if (isset($_conf) && isset($_conf["Class"])  && isset($_conf["Path"]) && !isset($_db))
-            if (self::normalizeSimpleInclude($_conf["Path"]) == 0) // Inclide database
+            if (self::normalizeSimpleInclude($_conf["Path"]) == 0) // Include database
                 try {
                     $cl = $_conf["Class"];
                     $_db = new $cl($_conf, self::$_path . self::normalizeUrl($_conf["Path"]) . "/");
@@ -544,7 +552,7 @@ class Route
 
     private static function loadPreSet($preset) {
         if (isset(self::$_conf["include"]) && isset(self::$_conf["include"][$preset]) && isset(self::$_conf["include"][$preset]["Class"]) && isset(self::$_conf["include"][$preset]["File"]) && !isset(self::$_preset[$preset]))
-            if (self::normalizeSimpleInclude(self::$_conf["include"][$preset]["File"]) == 0) { // Inclide output
+            if (self::normalizeSimpleInclude(self::$_conf["include"][$preset]["File"]) == 0) { // Include output
                 $cl = self::$_conf["include"][$preset]["Class"];
                 try {
                     if(!isset(self::$_conf["include"][$preset]["Config"]) || self::$_conf["include"][$preset]["Config"])
@@ -566,7 +574,7 @@ class Route
             $r=strtolower($r);
             if(isset(self::$_conf["include"][$r])) {
                 if (!isset(self::$_preset[$r])) {
-                    if ($r == 'db') // database not standart loaded
+                    if ($r == 'db') // database not standard loaded
                         self::loadDB(self::$_conf["include"]["db"], self::$_preset["db"]);
                     else
                         self::loadPreSet($r);
@@ -587,7 +595,6 @@ class Route
         }
         catch(Exception $e) {
             self::globalError("Error in method " . $required . "\n " . $e->getMessage());
-            return false;
         }
         if(count($_r)) {
             self::loadRequired($_r);

@@ -1,4 +1,4 @@
 <?php
 $_MAP = array(
-    "test" => "test",
+    "api" => "api",
 );

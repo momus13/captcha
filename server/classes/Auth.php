@@ -14,6 +14,6 @@ class Auth //implements iRoute
     function init($Classes)
     {
         $this->_session = $Classes["Session"];
-        echo "Access deny";
+        echo "Access allow";
     }
 }

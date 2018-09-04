@@ -22,14 +22,14 @@ class CoreFunction
             for ($i = 0; $i < count($param); $i++) {
                 if(!is_string($param[$i])) {
                     if(Route::getLogLevel()>0)
-                        Route::errorLog("arrayExtract: not string parametr");
+                        Route::errorLog("arrayExtract: not string parameter");
                     return [$i + 1];
                 }
                 if (isset($link[$param[$i]]))
                     $link = &$link[$param[$i]];
                 else {
                     if (Route::getLogLevel() > 2)
-                        Route::errorLog("arrayExtract: not set parametr " . $param[$i]);
+                        Route::errorLog("arrayExtract: not set parameter " . $param[$i]);
                     return [$i + 1];
                 }
         }
@@ -57,7 +57,7 @@ class CoreFunction
             for ($i = 0; $i <= $j; $i++) {
                 if(!is_string($param[$i])) {
                     if(Route::getLogLevel()>0)
-                        Route::errorLog("arraySet: not string parametr");
+                        Route::errorLog("arraySet: not string parameter");
                     return 2;
                 }
                 if (isset($link[$param[$i]])) {
@@ -67,7 +67,7 @@ class CoreFunction
                 else {
                     if($unset) {
                         if (Route::getLogLevel() > 2)
-                            Route::errorLog("arraySet: not set parametr " . $param[$i]);
+                            Route::errorLog("arraySet: not set parameter " . $param[$i]);
                         return 3;
                     }
                     if($i  < $j) {
