@@ -25,7 +25,7 @@ class Api {
 
         $colors = array();
         $col_index = array();
-        $this->create_massive($parameters['Colors'],$color_list,$colors,$col_index,$my_color);
+        $this->create_massive($parameters['Colors'],$parameters['ColorsList'],$colors,$col_index,$my_color);
         if($parameters['lang']>0 && $parameters['lang']<=count($langs))
             $lang=$parameters['lang'];
         if($parameters['count_quest']>0 && $parameters['count_quest']<4)
@@ -291,7 +291,7 @@ class Api {
         return $result;
     }
 
-    private function create_massive(&$str,&$massive,&$t,&$t_index,$cnt,$val=true)
+    private function create_massive($str,$massive,&$t,&$t_index,$cnt,$val=true)
     {
         $mas_key=array_keys($massive);
         $mas_ind=array_flip($mas_key);

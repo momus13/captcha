@@ -81,8 +81,8 @@ $_CONFIG = array(
         "default" => array(
             "CountFigureX" => 5,
             "CountFigureY" => 3,
-            "MaxFigureX" => 9,
-            "MaxFigureY" => 9,
+            "MaxFigureX" => 8,
+            "MaxFigureY" => 8,
             "MaxCorrect" => 50,
             "MinBlockPixel" => 24,
             "MaxBlockPixel" => 42,
@@ -93,10 +93,15 @@ $_CONFIG = array(
             "MinAnswer" => 0,
             "MaxAnswer" => 9,
             "BodyColor" => array(255,255,255),
+        ),
+        "parameters" => array(
             "PathFon" => "pic/fon/",
             "FileBody" => "machka.jpg",
             "PathElement" => "pic/image/",
-            "Colors" => array('k','o','b','g','r'),
+            "Colors" => array('k','o','b','g'),
+            "ColorsList" => array('k' => '151515','y' => '2552420','o' => '25513739','b' => '00255','g' => '02550','r' => '255128255'),
+            "LangList" => array('en' => 'eng.php','ru' => 'rus.php'),
+            "PathLang" => "lang/",
         )
     )
 );
