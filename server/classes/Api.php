@@ -20,17 +20,12 @@ class Api {
         $min_answer = $parameters['MinAnswer'];
         $max_answer = $parameters['MaxAnswer'];
         $bodyc = $parameters['BodyColor'];
+        $bodyf = $parameters['FileBody'];
+        $my_color = $parameters['MyColor'];
 
-        if(is_string($parameters['bodyf']))
-            $bodyf=$parameters['bodyf'];
-        $my_color=1;
-        if(is_array($parameters['mycolor']))
-            $my_color=0;
-        if($parameters['colors']===0)
-            $parameters['colors'] = $colors;
         $colors = array();
         $col_index = array();
-        $this->create_massive($parameters['colors'],$color_list,$colors,$col_index,$my_color);
+        $this->create_massive($parameters['Colors'],$color_list,$colors,$col_index,$my_color);
         if($parameters['lang']>0 && $parameters['lang']<=count($langs))
             $lang=$parameters['lang'];
         if($parameters['count_quest']>0 && $parameters['count_quest']<4)

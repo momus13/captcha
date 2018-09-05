@@ -142,7 +142,7 @@ class Route
     }
 
     public static function normalizeInclude($contrName, $param = Array()) {
-        if(isset($contrName["methods"]) && is_array($contrName["methods"]) && !in_array($contrName["methods"], $_SERVER["REQUEST_METHOD"]))
+        if(isset($contrName["methods"]) && is_array($contrName["methods"]) && !in_array($_SERVER["REQUEST_METHOD"], $contrName["methods"]))
             return 1;
         $_cache = self::loadCacheControllers();
         if ($_cache === false || !isset($_cache[$contrName])) {

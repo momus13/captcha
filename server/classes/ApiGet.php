@@ -4,21 +4,23 @@ class ApiGet
 {
 
     private $_conf;
+    private $_path;
     private $_param;
 
     function __construct($CONFIG)
     {
         $this->_conf = isset($CONFIG["api"]["default"]) ? $CONFIG["api"]["default"] : [];
+        $this->_path = $CONFIG["global"]["Path"];
     }
 
-    function init(/*$param*/) {
+    public function init(/*$param*/) {
         // $param["DB"]
         // $param["Remainder"]
-        if(isset($_GET["cx"]) && is_int($_GET["cx"]) && $_GET["cx"] > 1 && $_GET["cx"] <= $this->_conf["MaxFigureX"])
+        if(isset($_GET["cx"]) && is_int($_GET["cx"]) && $_GET["cx"] > 2 && $_GET["cx"] <= $this->_conf["MaxFigureX"])
             $this->_param["CountFigureX"] = $_GET["cx"];
         else
             $this->_param["CountFigureX"] = $this->_conf["CountFigureX"];
-        if(isset($_GET["cy"]) && is_int($_GET["cy"]) && $_GET["cy"] > 1 && $_GET["cy"] <= $this->_conf["MaxFigureY"])
+        if(isset($_GET["cy"]) && is_int($_GET["cy"]) && $_GET["cy"] > 2 && $_GET["cy"] <= $this->_conf["MaxFigureY"])
             $this->_param["CountFigureY"] = $_GET["cy"];
         else
             $this->_param["CountFigureY"] = $this->_conf["CountFigureY"];
@@ -57,13 +59,47 @@ class ApiGet
             $this->_param["MaxAnswer"] = $this->_conf["MaxAnswer"];
         if(isset($_GET["bc"]) && is_string($_GET["bc"])) {
             $a = explode(',',$_GET["bc"]);
-            if(count($a))
-                $this->_param["BodyColor"] = $_GET["bc"];
+            if(count($a) === 3) {
+                $this->_param["BodyColor"][] = $this->setColor($a[0]);
+                $this->_param["BodyColor"][] = $this->setColor($a[1]);
+                $this->_param["BodyColor"][] = $this->setColor($a[2]);
+            }
             else
                 $this->_param["BodyColor"] = $this->_conf["BodyColor"];
         }
         else
             $this->_param["BodyColor"] = $this->_conf["BodyColor"];
+        if(isset($_GET["bf"]) && is_bool($_GET["bf"]))
+            $this->_param["FileBody"] = $this->_path . $this->_conf["PathFon"] . "cats.jpg";
+        // поставить файл пользователя
+        else
+            $this->_param["FileBody"] = $this->_path . $this->_conf["PathFon"] . $this->_conf["FileBody"];
+        if(isset($_GET["mc"]) && is_bool($_GET["mc"]) && $_GET["mc"])
+            $this->_param["MyColor"] = 0;
+        else
+            $this->_param["MyColor"] = 1;
+        if(isset($_GET["cl"]) && is_string($_GET["cl"])) {
+            $this->_param["Colors"] = array();
+            foreach (((array)$_GET["cl"]) as $item) {
+                $a = strtolower($item);
+                if(in_array($a, array('k','o','b','g','r')))
+                    $this->_param["Colors"][] = $a;
+            }
+            if(count($this->_param["Colors"]) === 0)
+                $this->_param["Colors"] = $this->_conf["Colors"];
+        }
+        else
+            $this->_param["Colors"] = $this->_conf["Colors"];
         return $this->_param;
+    }
+
+    private function setColor($color) {
+        if(!is_int($color))
+            return 255;
+        if($color<0)
+            return 0;
+        if($color>255)
+            return 255;
+        return $color;
     }
 }

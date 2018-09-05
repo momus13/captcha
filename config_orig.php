@@ -93,6 +93,10 @@ $_CONFIG = array(
             "MinAnswer" => 0,
             "MaxAnswer" => 9,
             "BodyColor" => array(255,255,255),
+            "PathFon" => "pic/fon/",
+            "FileBody" => "machka.jpg",
+            "PathElement" => "pic/image/",
+            "Colors" => array('k','o','b','g','r'),
         )
     )
 );
