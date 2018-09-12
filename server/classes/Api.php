@@ -25,7 +25,7 @@ class Api {
 
         $colors = array();
         $col_index = array();
-        $this->create_massive($parameters['Colors'],$parameters['ColorsList'],$colors,$col_index,$my_color);
+        $this->create_massive($parameters['Colors'],$parameters['ColorsList'],$colors,$col_index);
         if($parameters['lang']>0 && $parameters['lang']<=count($langs))
             $lang=$parameters['lang'];
         if($parameters['count_quest']>0 && $parameters['count_quest']<4)
@@ -276,6 +276,7 @@ class Api {
         $reault_massive['ask'] = $questing;
         return $reault_massive;
     }
+
     private function all_figure($body,$color,$tmp,$allBody=true) {
         $result = 0;
         if($allBody) {
@@ -291,33 +292,16 @@ class Api {
         return $result;
     }
 
-    private function create_massive($str,$massive,&$t,&$t_index,$cnt,$val=true)
+    private function create_massive($arr,$massive,&$t,&$t_index,$val=true)
     {
-        $mas_key=array_keys($massive);
-        $mas_ind=array_flip($mas_key);
-        if(is_array($str))
+        $mas_ind = array_flip(array_keys($massive));
+        foreach($arr as $i)
         {
-            foreach($str as $i)
-            {
-                $j=$mas_ind[$i];
-                if(isset($j) && !in_array($j,$t_index))
-                {
-                    if($val)
-                        $t[] = $massive[$i];
-                    else
-                        $t[] = $i;
-                    $t_index[] = $j;
-                }
-            }
-            if(count($t)<$cnt) goto def;
-        }
-        else
-        {
-            def:	if($val)
-            $t = array_values($massive);
-        else
-            $t = $mas_key;
-            $t_index = array_values($mas_ind);
+            if($val)
+                $t[] = $massive[$i];
+            else
+                $t[] = $i;
+            $t_index[] = $mas_ind[$i];
         }
         return;
     }

@@ -18,47 +18,56 @@ class ApiGet
     public function init(/*$param*/) {
         // $param["DB"]
         // $param["Remainder"]
-        if(isset($_GET["cx"]) && is_int($_GET["cx"]) && $_GET["cx"] > 2 && $_GET["cx"] <= $this->_conf["MaxFigureX"])
-            $this->_result["CountFigureX"] = $_GET["cx"];
+        if(isset($_GET["cx"]) && is_numeric($_GET["cx"]) && $_GET["cx"] > 2 && $_GET["cx"] <= $this->_conf["MaxFigureX"])
+            $this->_result["CountFigureX"] = (int) $_GET["cx"];
         else
             $this->_result["CountFigureX"] = $this->_conf["CountFigureX"];
-        if(isset($_GET["cy"]) && is_int($_GET["cy"]) && $_GET["cy"] > 2 && $_GET["cy"] <= $this->_conf["MaxFigureY"])
-            $this->_result["CountFigureY"] = $_GET["cy"];
+
+        if(isset($_GET["cy"]) && is_numeric($_GET["cy"]) && $_GET["cy"] > 2 && $_GET["cy"] <= $this->_conf["MaxFigureY"])
+            $this->_result["CountFigureY"] = (int) $_GET["cy"];
         else
             $this->_result["CountFigureY"] = $this->_conf["CountFigureY"];
-        if(isset($_GET["mf"]) && is_int($_GET["mf"]) && $_GET["mf"] > -1
+
+        if(isset($_GET["mf"]) && is_numeric($_GET["mf"]) && $_GET["mf"] > -1
             && $_GET["cy"] < ($this->_result["CountFigureX"]*$this->_result["CountFigureY"]/2))
-            $this->_result["MaxExtraFigure"] = $_GET["mef"];
+            $this->_result["MaxExtraFigure"] = (int) $_GET["mef"];
         else
             $this->_result["MaxExtraFigure"] = $this->_conf["MaxExtraFigure"];
-        if(isset($_GET["co"]) && is_int($_GET["co"]) && $_GET["co"] > 0 && $_GET["co"] <= $this->_conf["MaxCorrect"])
-            $this->_result["Correct"] = $_GET["co"];
+
+        if(isset($_GET["co"]) && is_numeric($_GET["co"]) && $_GET["co"] > 0 && $_GET["co"] <= $this->_conf["MaxCorrect"])
+            $this->_result["Correct"] = (int) $_GET["co"];
         else
-            $this->_result["Correct"] = (int) ($this->_conf["MaxCorrect"] / 3);
-        if(isset($_GET["bs"]) && is_int($_GET["bs"]) && $_GET["bs"] > $this->_conf["MinBlockPixel"]
+            $this->_result["Correct"] = ($this->_conf["MaxCorrect"] / 3);
+
+        if(isset($_GET["bs"]) && is_numeric($_GET["bs"]) && $_GET["bs"] > $this->_conf["MinBlockPixel"]
             && $_GET["bs"] <= $this->_conf["MaxBlockPixel"])
-            $this->_result["BlockSize"] = $_GET["bs"];
+            $this->_result["BlockSize"] = (int) $_GET["bs"];
         else
             $this->_result["BlockSize"] = (int) (($this->_conf["MinBlockPixel"] + $this->_conf["MaxBlockPixel"]) / 2);
-        if(isset($_GET["qu"]) && is_int($_GET["qu"]) && $_GET["qu"] > $this->_conf["MinQuality"]
+
+        if(isset($_GET["qu"]) && is_numeric($_GET["qu"]) && $_GET["qu"] > $this->_conf["MinQuality"]
             && $_GET["qu"] <= $this->_conf["MaxQuality"])
-            $this->_result["Quality"] = $_GET["bs"];
+            $this->_result["Quality"] = (int) $_GET["bs"];
         else
             $this->_result["Quality"] = (int) (($this->_conf["MinQuality"] + $this->_conf["MaxQuality"]) / 2);
+
         if(isset($_GET["mm"]) && is_bool($_GET["mm"]))
             $this->_result["MayBeMinus"] = $_GET["mm"];
         else
             $this->_result["MayBeMinus"] = $this->_conf["MayBeMinus"];
-        if(isset($_GET["na"]) && is_int($_GET["na"]) && $_GET["na"] >= $this->_conf["MinAnswer"]
+
+        if(isset($_GET["na"]) && is_numeric($_GET["na"]) && $_GET["na"] >= $this->_conf["MinAnswer"]
         && $_GET["na"] < $this->_conf["MaxAnswer"])
-            $this->_result["MinAnswer"] = $_GET["na"];
+            $this->_result["MinAnswer"] = (int) $_GET["na"];
         else
             $this->_result["MinAnswer"] = $this->_conf["MinAnswer"];
-        if(isset($_GET["xa"]) && is_int($_GET["xa"]) && $_GET["xa"] > $this->_conf["MinAnswer"]
+
+        if(isset($_GET["xa"]) && is_numeric($_GET["xa"]) && $_GET["xa"] > $this->_conf["MinAnswer"]
             && $_GET["xa"] <= $this->_conf["MaxAnswer"])
-            $this->_result["MaxAnswer"] = $_GET["xa"];
+            $this->_result["MaxAnswer"] = (int) $_GET["xa"];
         else
             $this->_result["MaxAnswer"] = $this->_conf["MaxAnswer"];
+
         if(isset($_GET["bc"]) && is_string($_GET["bc"])) {
             $a = explode(',',$_GET["bc"]);
             if(count($a) === 3) {
@@ -71,34 +80,79 @@ class ApiGet
         }
         else
             $this->_result["BodyColor"] = $this->_conf["BodyColor"];
+
         if(isset($_GET["bf"]) && is_bool($_GET["bf"]))
             $this->_result["FileBody"] = $this->_path . $this->_param["PathFon"] . "cats.jpg";
         // поставить файл пользователя
         else
             $this->_result["FileBody"] = $this->_path . $this->_param["PathFon"] . $this->_param["FileBody"];
+
         if(isset($_GET["mc"]) && is_bool($_GET["mc"]) && $_GET["mc"])
             $this->_result["MyColor"] = 0;
         else
             $this->_result["MyColor"] = 1;
+
         if(isset($_GET["cl"]) && is_string($_GET["cl"])) {
             $this->_result["Colors"] = array();
             $b = array_keys($this->_param["ColorsList"]);
-            foreach (((array)$_GET["cl"]) as $item) {
+            foreach (explode(",",$_GET["cl"]) as $item) {
                 $a = strtolower($item);
-                if(in_array($a, $b))
+                if(in_array($a, $b) && !in_array($a, $this->_result["Colors"]))
                     $this->_result["Colors"][] = $a;
             }
             if(count($this->_result["Colors"]) === 0)
-                $this->_result["Colors"] = $this->_param["Colors"];
+                $this->_result["Colors"] = $this->_conf["Colors"];
         }
         else
-            $this->_result["Colors"] = $this->_param["Colors"];
+            $this->_result["Colors"] = $this->_conf["Colors"];
+
+        if(isset($_GET["sz"]) && is_string($_GET["sz"])) {
+            $this->_result["Sizes"] = array();
+            $b = array_keys($this->_param["SizesList"]);
+            foreach (explode(",",$_GET["sz"]) as $item) { // may be repeat size
+                $a = strtolower($item);
+                if(in_array($a, $b))
+                    $this->_result["Sizes"][] = $a;
+            }
+            if(count($this->_result["Sizes"]) === 0)
+                $this->_result["Sizes"] = $this->_conf["Sizes"];
+        }
+        else
+            $this->_result["Sizes"] = $this->_conf["Sizes"];
+
+        if(isset($_GET["bl"]) && is_string($_GET["bl"])) {
+            $this->_result["Bodies"] = array();
+            $b = array_keys($this->_param["BodiesList"]);
+            foreach (explode(",",$_GET["bl"]) as $item) {
+                $a = strtolower($item);
+                if(in_array($a, $b) && !in_array($a, $this->_result["Bodies"]))
+                    $this->_result["Bodies"][] = $a;
+            }
+            if(count($this->_result["Bodies"]) === 0)
+                $this->_result["Bodies"] = $this->_conf["Bodies"];
+        }
+        else
+            $this->_result["Bodies"] = $this->_conf["Bodies"];
+
+        if(isset($_GET["lg"]) && is_string($_GET["lg"])) {
+            $this->_result["Lang"] = array();
+            $a = strtolower($_GET["lg"]);
+            if(in_array($a, array_keys($this->_param["LangList"])))
+                $this->_result["Lang"] = $this->_param["ColorsList"][$a];
+            else
+                $this->_result["Lang"] = $this->_param["ColorsList"][$this->_conf["Lang"]];
+        }
+        else
+            $this->_result["Lang"] = $this->_param["ColorsList"][$this->_conf["Lang"]];
+
         $this->_result["ColorsList"] = $this->_param["ColorsList"];
+        $this->_result["SizesList"] = $this->_param["SizesList"];
+        $this->_result["BodiesList"] = $this->_param["BodiesList"];
         return $this->_result;
     }
 
     private function setColor($color) {
-        if(!is_int($color))
+        if(!is_numeric($color))
             return 255;
         if($color<0)
             return 0;
