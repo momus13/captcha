@@ -96,7 +96,8 @@ $_CONFIG = array(
             "Colors" => array('k','o','b','g'),
             "Bodies" => array('t','c','q','k','s'),
             "Sizes" => array('b','m','s'),
-            "Lang" => "ru"
+            "Lang" => "ru",
+            "CountQuest" => 2
         ),
         "parameters" => array(
             "PathFon" => "pic/fon/",

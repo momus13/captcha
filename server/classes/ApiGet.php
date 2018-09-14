@@ -134,16 +134,31 @@ class ApiGet
         else
             $this->_result["Bodies"] = $this->_conf["Bodies"];
 
+        $this->_result["Lang"] = $this->_path . $this->_param["PathLang"];
         if(isset($_GET["lg"]) && is_string($_GET["lg"])) {
-            $this->_result["Lang"] = array();
             $a = strtolower($_GET["lg"]);
             if(in_array($a, array_keys($this->_param["LangList"])))
-                $this->_result["Lang"] = $this->_param["ColorsList"][$a];
+                $this->_result["Lang"] .= $this->_param["LangList"][$a];
             else
-                $this->_result["Lang"] = $this->_param["ColorsList"][$this->_conf["Lang"]];
+                $this->_result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
         }
         else
-            $this->_result["Lang"] = $this->_param["ColorsList"][$this->_conf["Lang"]];
+            $this->_result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
+
+        if(isset($_GET["cq"]) && is_numeric($_GET["cq"]) && $_GET["cq"] > 0 && $_GET["cq"] < 4)
+            $this->_result["CountQuest"] = (int) $_GET["cq"];
+        else
+            $this->_result["CountQuest"] = $this->_conf["CountQuest"];
+
+        if(isset($_GET["td"]) && is_string($_GET["td"])) {
+            $a = strtolower($_GET["lg"]);
+            if(in_array($a, array_keys($this->_param["LangList"])))
+                $this->_result["Lang"] .= $this->_param["LangList"][$a];
+            else
+                $this->_result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
+        }
+        else
+            $this->_result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
 
         $this->_result["ColorsList"] = $this->_param["ColorsList"];
         $this->_result["SizesList"] = $this->_param["SizesList"];
@@ -158,6 +173,6 @@ class ApiGet
             return 0;
         if($color>255)
             return 255;
-        return $color;
+        return (int) $color;
     }
 }

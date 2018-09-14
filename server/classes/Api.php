@@ -6,8 +6,6 @@ class Api {
     }
 
     public function init($parameters) {
-//        global $pathRoot,$langs,$type_list,$color_list,$size_list,$sum_list;
-//        require_once $pathRoot.'config'.DIRECTORY_SEPARATOR.'default.php';
         $count_figure_x = $parameters["CountFigureX"];
         $count_figure_y = $parameters["CountFigureY"];
         $count_figure_base = $count_figure_x * $count_figure_y;
@@ -22,14 +20,14 @@ class Api {
         $bodyc = $parameters['BodyColor'];
         $bodyf = $parameters['FileBody'];
         $my_color = $parameters['MyColor'];
+        $count_quest = $parameters['CountQuest'];
+        $lang = $parameters['Lang'];
 
         $colors = array();
         $col_index = array();
         $this->create_massive($parameters['Colors'],$parameters['ColorsList'],$colors,$col_index);
         if($parameters['lang']>0 && $parameters['lang']<=count($langs))
             $lang=$parameters['lang'];
-        if($parameters['count_quest']>0 && $parameters['count_quest']<4)
-            $count_quest=$parameters['count_quest'];
         if($parameters['types']==0)
             $parameters['types'] = $bodys;
         $bodys = array();
@@ -39,7 +37,7 @@ class Api {
         $dev_index = array();
         $this->create_massive($parameters['sum'],$sum_list,$devs,$dev_index,1);
 
-        require_once $pathRoot.'config'.DIRECTORY_SEPARATOR.$langs[--$lang].'.php';
+        require_once $lang.'.php';
         if(!$my_color)
             foreach($parameters['mycolor'] as $index_color => $name_color)
             {
