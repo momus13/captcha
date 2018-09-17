@@ -19,36 +19,26 @@ class Api {
         $max_answer = $parameters['MaxAnswer'];
         $bodyc = $parameters['BodyColor'];
         $bodyf = $parameters['FileBody'];
-        $my_color = $parameters['MyColor'];
         $count_quest = $parameters['CountQuest'];
         $lang = $parameters['Lang'];
 
-        $colors = array();
-        $col_index = array();
-        $this->create_massive($parameters['Colors'],$parameters['ColorsList'],$colors,$col_index);
-        if($parameters['lang']>0 && $parameters['lang']<=count($langs))
-            $lang=$parameters['lang'];
-        if($parameters['types']==0)
-            $parameters['types'] = $bodys;
-        $bodys = array();
-        $bod_index = array();
-        $this->create_massive($parameters['types'],$type_list,$bodys,$bod_index,2,false);
-        $devs = array();
-        $dev_index = array();
-        $this->create_massive($parameters['sum'],$sum_list,$devs,$dev_index,1);
+        $colors = $parameters['Colors'];
+        $col_index = array_keys($parameters['ColorsList']);
+        $bodys = $parameters['Bodies'];
+        $bod_index = $parameters['BodiesList'];
+        $devs = $parameters['Sums'];
+        $dev_index = $parameters['SumsList'];
+        $figures = $parameters['Sizes'];
+        $size_list = $parameters['SizesList'];
 
         require_once $lang.'.php';
-        if(!$my_color)
-            foreach($parameters['mycolor'] as $index_color => $name_color)
-            {
-                $col_index[] = count($acolor);
-                $colors[] = $index_color;
-                $acolor[]=$name_color;
-            }
-        $figures = array();
-        foreach($size_list as $key => $value)
-            if($value<$block_size-4)
-                $figures[] = $key;
+
+        if(isset($parameters['MyColor']))
+            $acolor[] = $parameters['MyColor'];
+        if(isset($parameters['MyBody']))
+            $figure[] = $parameters['MyBody'];
+
+
         $correct=$correct/100;
         $count_adev=count($devs);
         $count_size=count($figures);
@@ -61,7 +51,6 @@ class Api {
         $count_figure=$count_figure_base;
         if($max_extra_figure>0)
             $max_extra_figure=rand(0,$max_extra_figure);
-
         $count_figure+=$max_extra_figure;
 
 
@@ -77,7 +66,7 @@ class Api {
         for($j=0;$j<$count_quest;$j++)
         {
 
-            $rnddev=$dev_index[rand(0,$count_adev-1)];
+            $rnddev=$dev_index[$devs[rand(0,$count_adev-1)]];
 
             $maxRand = (int)(($count_figure -2) / ($count_quest - $j) / 2);
 
@@ -85,12 +74,12 @@ class Api {
             $rndcolor1 = $rnd1["color"];
             $rndbody1 = $rnd1["body"];
 
-            $rnd1=rand(isset($min_answer) && $min_answer >0 ? $min_answer : 0, isset($max_answer) && $max_answer>0 ? $max_answer : $maxRand);
+            $rnd1=rand($min_answer, $max_answer < $max_answer ? $max_answer : $maxRand);
 
             $rnd2 = array_shift($all_variety);
             $rndcolor2 = $rnd2["color"];
             $rndbody2 = $rnd2["body"];
-            $rnd2=rand(isset($min_answer) && $min_answer >0 ? $min_answer : 0, isset($max_answer) &&  $max_answer>0 ? $max_answer : $maxRand);
+            $rnd2=rand($min_answer, $max_answer < $max_answer ? $max_answer : $maxRand);
             switch ($rnddev) {
                 case 0:
                     if($rnd1+$rnd2===0 && !$maybe_zero)
@@ -125,7 +114,6 @@ class Api {
             $rnd = array_shift($all_variety);
             $rndcolor = $rnd["color"];
             $rndbody = $rnd["body"];
-            $rnd = rand(1,$i);
             if(count($all_variety)===0)
                 $rnd=$i;
             else
@@ -154,7 +142,7 @@ class Api {
             }
             if($count_color>1) {
                 if(rand(1,$count_color+1)<$count_color)
-                    $result['quest'] .=  $acolor[$col_index[$c1]].' ';
+                    $result['quest'] .=  $acolor[$colors[$c1]].' ';
                 else {
                     if($a) {
                         $result['quest'] .= $strfigures;
@@ -165,7 +153,7 @@ class Api {
                 }
             }
             if($a)
-                $result['quest'] .=  $figure[$bod_index[$b1]];
+                $result['quest'] .=  $figure[$bodys[$b1]];
             else
                 $result['quest'] .=  $strfigure;
             $a=true;
@@ -177,7 +165,7 @@ class Api {
             }
             if($count_color>1) {
                 if(rand(1,$count_color+1)<$count_color || ($d === 1 && !($maybe_zero && $maybe_minus)))
-                    $result['quest'] .= $acolor[$col_index[$c2]].' ';
+                    $result['quest'] .= $acolor[$colors[$c2]].' ';
                 else {
                     if($a) {
                         $result['quest'] .= $strfigures;
@@ -189,7 +177,7 @@ class Api {
                 }
             }
             if($a)
-                $result['quest'] .= $figure[$bod_index[$b2]];
+                $result['quest'] .= $figure[$bodys[$b2]];
             else
                 $result['quest'] .= $strfigure;
             switch ($d) {
@@ -210,15 +198,14 @@ class Api {
 
         // start generate picture
         $thumb = imagecreatetruecolor($count_figure_x*$block_size,$count_figure_y*$block_size);
-        if($bodyf!='') {
-            $path=$pathRoot.'fon'.DIRECTORY_SEPARATOR.$bodyf;
-            $img = imagecreatefromjpeg($path);  /* TO DO */
+        if($bodyf!=='') {
+            $img = imagecreatefromjpeg($bodyf);
             if($img===false)
                 $bodyf='';
             else
                 imagecopy($thumb, $img, 0, 0, 0, 0, $count_figure_x*$block_size, $count_figure_y*$block_size);
         }
-        if($bodyf=='')	{
+        if($bodyf==='')	{
             $iColor = imagecolorallocate($thumb, $bodyc[0], $bodyc[1], $bodyc[2]);
             imagefill($thumb, 0, 0, $iColor); }
 
@@ -288,19 +275,5 @@ class Api {
                     $result++;
         }
         return $result;
-    }
-
-    private function create_massive($arr,$massive,&$t,&$t_index,$val=true)
-    {
-        $mas_ind = array_flip(array_keys($massive));
-        foreach($arr as $i)
-        {
-            if($val)
-                $t[] = $massive[$i];
-            else
-                $t[] = $i;
-            $t_index[] = $mas_ind[$i];
-        }
-        return;
     }
 }

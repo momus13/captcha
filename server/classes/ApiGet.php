@@ -18,6 +18,12 @@ class ApiGet
     public function init(/*$param*/) {
         // $param["DB"]
         // $param["Remainder"]
+
+        $this->_result["ColorsList"] = $this->_param["ColorsList"];
+        $this->_result["SizesList"] = $this->_param["SizesList"];
+        $this->_result["BodiesList"] = $this->_param["BodiesList"];
+        $this->_result["SumsList"] = $this->_param["SumsList"];
+
         if(isset($_GET["cx"]) && is_numeric($_GET["cx"]) && $_GET["cx"] > 2 && $_GET["cx"] <= $this->_conf["MaxFigureX"])
             $this->_result["CountFigureX"] = (int) $_GET["cx"];
         else
@@ -87,18 +93,18 @@ class ApiGet
         else
             $this->_result["FileBody"] = $this->_path . $this->_param["PathFon"] . $this->_param["FileBody"];
 
-        if(isset($_GET["mc"]) && is_bool($_GET["mc"]) && $_GET["mc"])
-            $this->_result["MyColor"] = 0;
-        else
-            $this->_result["MyColor"] = 1;
-
         if(isset($_GET["cl"]) && is_string($_GET["cl"])) {
             $this->_result["Colors"] = array();
             $b = array_keys($this->_param["ColorsList"]);
-            foreach (explode(",",$_GET["cl"]) as $item) {
-                $a = strtolower($item);
-                if(in_array($a, $b) && !in_array($a, $this->_result["Colors"]))
-                    $this->_result["Colors"][] = $a;
+            foreach (explode(",",strtolower($_GET["cl"])) as $item) {
+                if(in_array($item, $b) && !in_array($item, $this->_result["Colors"]))
+                    $this->_result["Colors"][] = $item;
+                if($item === "my") {
+                    // прочесть и добавить цвет пользователя
+                    $this->_result["Colors"][] = "user";
+                    $this->_result["ColorsList"]["user"] = '255128255';
+                    $this->_result["MyColor"]["user"] = 'custom';
+                }
             }
             if(count($this->_result["Colors"]) === 0)
                 $this->_result["Colors"] = $this->_conf["Colors"];
@@ -109,10 +115,9 @@ class ApiGet
         if(isset($_GET["sz"]) && is_string($_GET["sz"])) {
             $this->_result["Sizes"] = array();
             $b = array_keys($this->_param["SizesList"]);
-            foreach (explode(",",$_GET["sz"]) as $item) { // may be repeat size
-                $a = strtolower($item);
-                if(in_array($a, $b))
-                    $this->_result["Sizes"][] = $a;
+            foreach (explode(",",strtolower($_GET["sz"])) as $item) { // may be repeat size
+                if(in_array($item, $b) && $this->_result["BlockSize"] - 3 > $this->_param["SizesList"][$item])
+                    $this->_result["Sizes"][] = $item;
             }
             if(count($this->_result["Sizes"]) === 0)
                 $this->_result["Sizes"] = $this->_conf["Sizes"];
@@ -123,10 +128,15 @@ class ApiGet
         if(isset($_GET["bl"]) && is_string($_GET["bl"])) {
             $this->_result["Bodies"] = array();
             $b = array_keys($this->_param["BodiesList"]);
-            foreach (explode(",",$_GET["bl"]) as $item) {
-                $a = strtolower($item);
-                if(in_array($a, $b) && !in_array($a, $this->_result["Bodies"]))
-                    $this->_result["Bodies"][] = $a;
+            foreach (explode(",",strtolower($_GET["bl"])) as $item) {
+                if(in_array($item, $b) && !in_array($item, $this->_result["Bodies"]))
+                    $this->_result["Bodies"][] = $item;
+                if($item === "my") {
+                    // прочесть и добавить фигуру пользователя
+                    $this->_result["Bodies"][] = "user";
+                    $this->_result["BodiesList"]["user"] = 1;
+                    $this->_result["MyBody"]["user"] = 'custom';
+                }
             }
             if(count($this->_result["Bodies"]) === 0)
                 $this->_result["Bodies"] = $this->_conf["Bodies"];
@@ -151,18 +161,18 @@ class ApiGet
             $this->_result["CountQuest"] = $this->_conf["CountQuest"];
 
         if(isset($_GET["td"]) && is_string($_GET["td"])) {
-            $a = strtolower($_GET["lg"]);
-            if(in_array($a, array_keys($this->_param["LangList"])))
-                $this->_result["Lang"] .= $this->_param["LangList"][$a];
-            else
-                $this->_result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
+            $this->_result["Sums"] = array();
+            $b = array_keys($this->_param["SumsList"]);
+            foreach (explode(",",strtolower($_GET["td"])) as $item) {
+                if(in_array($item, $b) && !in_array($item, $this->_result["Sums"]))
+                    $this->_result["Sums"][] = $item;
+            }
+            if(count($this->_result["Sums"]) === 0)
+                $this->_result["Bodies"] = $this->_conf["Sums"];
         }
         else
-            $this->_result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
+            $this->_result["Sums"] = $this->_conf["Sums"];
 
-        $this->_result["ColorsList"] = $this->_param["ColorsList"];
-        $this->_result["SizesList"] = $this->_param["SizesList"];
-        $this->_result["BodiesList"] = $this->_param["BodiesList"];
         return $this->_result;
     }
 
