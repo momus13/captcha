@@ -35,22 +35,6 @@ $_CNTRL = Array(
             "Session"
         ]
     ],
-    "api" => [
-        "file" => "server/classes/Api.php",
-        "class" => "Api",
-        "global" => [],
-        "before" => ["api_get"],
-        "config" => false,
-        "html" => false,
-        "methods" => ["GET"] // http method request on upper case, default All methods
-    ],
-    "api_get" => [
-        "file" => "server/classes/ApiGet.php",
-        "class" => "ApiGet",
-        //"global" => ["Remainder", "DB"],
-        "ParametersInit" => false,
-        "html" => false
-    ],
     "safe_load" => [
         "file" => "server/vendors/SafeLoad",
         "class" => "SafeLoad",
@@ -61,5 +45,20 @@ $_CNTRL = Array(
         "before" => [ // controller for rights checking
         ],
         "html" => false
+    ],
+    "api" => [
+        "file" => "server/classes/Api.php",
+        "class" => "Api",
+        "global" => ["Output"],
+        "before" => ["api_get"],
+        "config" => false,
+        "html" => false,
+        "methods" => ["GET"] // http method request on upper case, default All methods
+    ],
+    "api_get" => [
+        "file" => "server/classes/ApiGet.php",
+        "class" => "ApiGet",
+        //"global" => ["Remainder", "DB"],
+        "ParametersInit" => false
     ]
 );

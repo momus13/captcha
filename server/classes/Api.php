@@ -6,37 +6,41 @@ class Api {
     }
 
     public function init($parameters) {
-        $count_figure_x = $parameters["CountFigureX"];
-        $count_figure_y = $parameters["CountFigureY"];
-        $count_figure_base = $count_figure_x * $count_figure_y;
-        $max_extra_figure = $parameters['MaxExtraFigure'];
-        $correct = $parameters['Correct'];
-        $block_size = $parameters['BlockSize'];
-        $quality = $parameters['Quality'];
-        $maybe_minus = $parameters['MayBeMinus'];
-        $maybe_zero = $parameters['MayBeZero'];
-        $min_answer = $parameters['MinAnswer'];
-        $max_answer = $parameters['MaxAnswer'];
-        $bodyc = $parameters['BodyColor'];
-        $bodyf = $parameters['FileBody'];
-        $count_quest = $parameters['CountQuest'];
-        $lang = $parameters['Lang'];
 
-        $colors = $parameters['Colors'];
-        $col_index = array_keys($parameters['ColorsList']);
-        $bodys = $parameters['Bodies'];
-        $bod_index = $parameters['BodiesList'];
-        $devs = $parameters['Sums'];
-        $dev_index = $parameters['SumsList'];
-        $figures = $parameters['Sizes'];
-        $size_list = $parameters['SizesList'];
+        $param = $parameters["Return"]["api_get"];
+        $_out = $parameters["Output"];
+
+        $count_figure_x = $param["CountFigureX"];
+        $count_figure_y = $param["CountFigureY"];
+        $count_figure_base = $count_figure_x * $count_figure_y;
+        $max_extra_figure = $param['MaxExtraFigure'];
+        $correct = $param['Correct'];
+        $block_size = $param['BlockSize'];
+        $quality = $param['Quality'];
+        $maybe_minus = $param['MayBeMinus'];
+        $maybe_zero = $param['MayBeZero'];
+        $min_answer = $param['MinAnswer'];
+        $max_answer = $param['MaxAnswer'];
+        $bodyc = $param['BodyColor'];
+        $bodyf = $param['FileBody'];
+        $count_quest = $param['CountQuest'];
+        $lang = $param['Lang'];
+
+        $colors = $param['Colors'];
+        $col_index = $param['ColorsList'];
+        $bodys = $param['Bodies'];
+        $bod_index = $param['BodiesList'];
+        $devs = $param['Sums'];
+        $dev_index = $param['SumsList'];
+        $figures = $param['Sizes'];
+        $size_list = $param['SizesList'];
 
         require_once $lang.'.php';
 
-        if(isset($parameters['MyColor']))
-            $acolor[] = $parameters['MyColor'];
-        if(isset($parameters['MyBody']))
-            $figure[] = $parameters['MyBody'];
+        if(isset($param['MyColor']))
+            $acolor[] = $param['MyColor'];
+        if(isset($param['MyBody']))
+            $figure[] = $param['MyBody'];
 
 
         $correct=$correct/100;
@@ -46,7 +50,7 @@ class Api {
         $count_color=count($colors);
         $noautogif=array();
         $all_variety=array();
-        $reault_massive = array();
+        $reasult_massive = array();
 
         $count_figure=$count_figure_base;
         if($max_extra_figure>0)
@@ -207,7 +211,8 @@ class Api {
         }
         if($bodyf==='')	{
             $iColor = imagecolorallocate($thumb, $bodyc[0], $bodyc[1], $bodyc[2]);
-            imagefill($thumb, 0, 0, $iColor); }
+            imagefill($thumb, 0, 0, $iColor);
+        }
 
         for($i = 0; $i < $count_figure_y; $i++)
         {
@@ -215,8 +220,8 @@ class Api {
             {
                 $size=$figures[rand(0,$count_size-1)];
                 $type=$bodys[$noautogif[$i*$count_figure_x+$j]["body"]];
-                $color=$colors[$noautogif[$i*$count_figure_x+$j]["color"]];
-                $path=$pathRoot.'image'.DIRECTORY_SEPARATOR.$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$type_list[$type])).".gif";
+                $color=$col_index[$colors[$noautogif[$i*$count_figure_x+$j]["color"]]];
+                $path=$param['FileElements'].DIRECTORY_SEPARATOR.$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$bod_index[$type])).".gif";
                 $img = imagecreatefromgif($path);
                 $hw=$size_list[$size];
                 $h=$hw*$correct;
@@ -236,8 +241,8 @@ class Api {
             {
                 $size=$figures[rand(0,$count_size-1)];
                 $type=$bodys[$noautogif[$i]["body"]];
-                $color=$colors[$noautogif[$i]["color"]];
-                $path=$pathRoot.'image'.DIRECTORY_SEPARATOR.$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$type_list[$type])).".gif";
+                $color=$col_index[$colors[$noautogif[$i]["color"]]];
+                $path=$param['FileElements'].DIRECTORY_SEPARATOR.$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$bod_index[$type])).".gif";
                 $img = imagecreatefromgif($path);
                 $hw=$size_list[$size];
                 $cor=$c*($i-$count_figure_base);
@@ -251,15 +256,19 @@ class Api {
             }
         }
         $rand = dechex(CRC32(time()));
-        $rand = substr($rand,rand(0,6)).dechex($parameters['id']).substr($rand,0,rand(2,8));
-        imagejpeg($thumb,'img'.DIRECTORY_SEPARATOR.$rand,$quality);
+        $rand = substr($rand,4).dechex($param['ID']).substr($rand,0,rand(2,8));
+        imagejpeg($thumb,$param["PathResult"].$rand,$quality);
 
         // finish picture
 
-        $reault_massive['link'] = $rand;
+        $result_massive['link'] = $rand;
+        $result_massive['ask'] = $questing;
 
-        $reault_massive['ask'] = $questing;
-        return $reault_massive;
+        if(isset($param["Echo"]) && $param["Echo"])
+            $_out->print_t($result_massive,"xml");
+        else
+            $_out->print_t($result_massive);
+
     }
 
     private function all_figure($body,$color,$tmp,$allBody=true) {

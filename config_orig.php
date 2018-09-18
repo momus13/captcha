@@ -110,6 +110,7 @@ $_CONFIG = array(
             "BodiesList" => array('t' => 4,'c' => 1,'q' => 1,'k' => 2,'m' => 1,'s' => 1),
             "SumsList" => array('p' => 0,'m' => 1,'d' => 2),
             "PathLang" => "lang/",
+            "PathResult" => "/img/",
         )
     )
 );

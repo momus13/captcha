@@ -36,18 +36,48 @@ class Output
 
     /**
      * @param array $data данные
-     * @param int $error код ошибки
      * @param string $type тип ответа
+     * @param int $error код ошибки
+     * @param string $err_text текст ошибки для записи в логи
+     *
      * @return array|int|string
      */
 
-    public function print_t($data, $error = 0, $err_text = "", $type = 'JSON')
+    public function print_t($data, $type = 'JSON', $error = 0, $err_text = "")
+    {
+        return $this->_print($data, $error, $err_text, $type);
+    }
+
+    /**
+     * @param array $data данные
+     * @param int $error код ошибки
+     * @param string $err_text текст ошибки для записи в логи
+     * @param string $type тип ответа
+     *
+     * @return array|int|string
+     */
+
+    public function print_e($data, $type = 'JSON', $error = 0, $err_text = "")
+    {
+        return $this->_print($data, $error, $err_text, $type);
+    }
+
+    /**
+     * @param array $data
+     * @param int $error
+     * @param string $err_text
+     * @param string $type
+     *
+     * @return mixed
+     */
+
+    private function _print($data, $error, $err_text , $type)
     {
         if (!is_array($data))
             return 1;
         if (!is_int($error)) {
             if (Route::getLogLevel() > 0)
-                Route::errorLog("Not standart error type: " . $error);
+                Route::errorLog("Not standard error type: " . $error);
             $error = 0;
         }
         $send = Array();

@@ -16,8 +16,8 @@ class ApiGet
     }
 
     public function init(/*$param*/) {
-        // $param["DB"]
-        // $param["Remainder"]
+        /*$param["DB"];  // TODO read parameters from db
+        $param["Remainder"];*/
 
         $this->_result["ColorsList"] = $this->_param["ColorsList"];
         $this->_result["SizesList"] = $this->_param["SizesList"];
@@ -172,6 +172,21 @@ class ApiGet
         }
         else
             $this->_result["Sums"] = $this->_conf["Sums"];
+
+        if(isset($_GET["token"]) && is_string($_GET["token"])) {
+            if(false) // TODO проверить токен
+                $this->_result["ID"] = 1;
+            else
+                $this->_result["ID"] = 0;
+        }
+        else
+            $this->_result["ID"] = 0;
+
+        if(isset($_GET["xml"]) && is_bool($_GET["xml"]))
+            $this->_result["Echo"] = (bool) $_GET["xml"];
+
+        $this->_result["FileElements"] = $this->_path . $this->_param["PathElement"];
+        $this->_result["PathResult"] = $this->_param["PathResult"];
 
         return $this->_result;
     }
