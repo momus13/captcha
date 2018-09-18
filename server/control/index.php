@@ -59,6 +59,7 @@ $_CNTRL = Array(
         "file" => "server/classes/ApiGet.php",
         "class" => "ApiGet",
         //"global" => ["Remainder", "DB"],
+        "html" => false,
         "ParametersInit" => false
     ]
 );

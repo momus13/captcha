@@ -81,6 +81,7 @@ $_CONFIG = array(
         "default" => array(
             "CountFigureX" => 5,
             "CountFigureY" => 3,
+            "MaxExtraFigure" => 3,
             "MaxFigureX" => 8,
             "MaxFigureY" => 8,
             "MaxCorrect" => 50,

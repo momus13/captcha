@@ -35,7 +35,7 @@ class Api {
         $figures = $param['Sizes'];
         $size_list = $param['SizesList'];
 
-        require_once $lang.'.php';
+        require_once $lang;
 
         if(isset($param['MyColor']))
             $acolor[] = $param['MyColor'];
@@ -50,7 +50,7 @@ class Api {
         $count_color=count($colors);
         $noautogif=array();
         $all_variety=array();
-        $reasult_massive = array();
+        $result_massive = array();
 
         $count_figure=$count_figure_base;
         if($max_extra_figure>0)
@@ -221,7 +221,7 @@ class Api {
                 $size=$figures[rand(0,$count_size-1)];
                 $type=$bodys[$noautogif[$i*$count_figure_x+$j]["body"]];
                 $color=$col_index[$colors[$noautogif[$i*$count_figure_x+$j]["color"]]];
-                $path=$param['FileElements'].DIRECTORY_SEPARATOR.$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$bod_index[$type])).".gif";
+                $path=$param['FileElements'].$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$bod_index[$type])).".gif";
                 $img = imagecreatefromgif($path);
                 $hw=$size_list[$size];
                 $h=$hw*$correct;
@@ -242,7 +242,7 @@ class Api {
                 $size=$figures[rand(0,$count_size-1)];
                 $type=$bodys[$noautogif[$i]["body"]];
                 $color=$col_index[$colors[$noautogif[$i]["color"]]];
-                $path=$param['FileElements'].DIRECTORY_SEPARATOR.$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$bod_index[$type])).".gif";
+                $path=$param['FileElements'].$color.DIRECTORY_SEPARATOR.$size.$type.((int)rand(1,$bod_index[$type])).".gif";
                 $img = imagecreatefromgif($path);
                 $hw=$size_list[$size];
                 $cor=$c*($i-$count_figure_base);
@@ -257,7 +257,7 @@ class Api {
         }
         $rand = dechex(CRC32(time()));
         $rand = substr($rand,4).dechex($param['ID']).substr($rand,0,rand(2,8));
-        imagejpeg($thumb,$param["PathResult"].$rand,$quality);
+        imagejpeg($thumb,".".$param["PathResult"].$rand,$quality);
 
         // finish picture
 

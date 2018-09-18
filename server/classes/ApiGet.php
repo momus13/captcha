@@ -62,6 +62,11 @@ class ApiGet
         else
             $this->_result["MayBeMinus"] = $this->_conf["MayBeMinus"];
 
+        if(isset($_GET["mz"]) && is_bool($_GET["mz"]))
+            $this->_result["MayBeZero"] = $_GET["mz"];
+        else
+            $this->_result["MayBeZero"] = $this->_conf["MayBeZero"];
+
         if(isset($_GET["na"]) && is_numeric($_GET["na"]) && $_GET["na"] >= $this->_conf["MinAnswer"]
         && $_GET["na"] < $this->_conf["MaxAnswer"])
             $this->_result["MinAnswer"] = (int) $_GET["na"];
