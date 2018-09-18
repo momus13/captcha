@@ -18,7 +18,7 @@ $_CONFIG = array(
         //"LogPath" => "/var/log/path/name" name and path to log, default ../logs/log.log
     ),
     "default" => array (
-        "init" => "init", // start method
+        "main" => "init", // start method
         "type" => "class", // class or function
         "config" => true, // send param config to construct class
         "LetterCase" => true, // convert to capital first letter from default class name
@@ -64,11 +64,11 @@ $_CONFIG = array(
             "Class" => 'Getter', // class name , default name == Method
             "Required" => "required", // method return list of preset class required
             "Init" => "init", // method return list of preset class required
+        ),
+        "core" => array (
+            "File" => 'server/modules/preset/coref.php', // path to php file class output
+            "Class" => 'CoreFunction', // class name , default name == Method
         )
-    ),
-    "core" => array (
-        "File" => 'server/modules/preset/coref.php', // path to php file class output
-        "Class" => 'CoreFunction', // class name , default name == Method
     ),
     "map" => array (
         "public" => 'server/map/public.php', // path to php file map
