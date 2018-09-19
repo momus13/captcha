@@ -61,5 +61,13 @@ $_CNTRL = Array(
         //"global" => ["Remainder", "DB"],
         "html" => false,
         "ParametersInit" => false
+    ],
+    "api_set_color" => [
+        "file" => "server/classes/ApiGet.php",
+        "class" => "ApiGet",
+        "main" => "createColor",
+        //"global" => ["Remainder", "DB"],
+        "html" => false,
+        "ParametersInit" => false
     ]
 );

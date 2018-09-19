@@ -108,10 +108,11 @@ $_CONFIG = array(
             "ColorsList" => array('k' => '151515','y' => '2552420','o' => '25513739','b' => '00255','g' => '02550','r' => '255128255'),
             "LangList" => array('en' => 'eng.php','ru' => 'rus.php'),
             "SizesList" => array('b' => 30,'m' => 25,'s' => 20),
-            "BodiesList" => array('t' => 4,'c' => 1,'q' => 1,'k' => 2,'m' => 1,'s' => 1),
+            "BodiesList" => array('t' => 4,'c' => 1,'q' => 1,'k' => 2,'m' => 1,'s' => 2),
             "SumsList" => array('p' => 0,'m' => 1,'d' => 2),
             "PathLang" => "lang/",
             "PathResult" => "/img/",
+            "PathStamp" => "pic/stamp/"
         )
     )
 );

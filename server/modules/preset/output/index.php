@@ -64,7 +64,7 @@ class Output
 
     /**
      * @param array $data
-     * @param int $error
+     * @param int|bool $error
      * @param string $err_text
      * @param string $type
      *
@@ -75,39 +75,43 @@ class Output
     {
         if (!is_array($data))
             return 1;
-        if (!is_int($error)) {
+        if (!is_int($error) && !is_bool($error)) {
             if (Route::getLogLevel() > 0)
                 Route::errorLog("Not standard error type: " . $error);
             $error = 0;
         }
         $send = Array();
-        $send["data"] = $data;
-        $send["error"] = Array("code" => $error);
-        if ($error) {
-            if (Route::getLogLevel() > 0) {
-                if (count($err_text) === 0)
-                    $err_text = "Not set user error text for Err_code=" . $error;
-                Route::errorLog("User error : " . $err_text);
-            }
-            if ($this->_file === false) {
-                if (file_exists($this->_path . "/lang/" . $this->_lang . ".php")) { // loading list of message error, for send to users
-                    include($this->_path . "/lang/" . $this->_lang . ".php");
-                    $this->_file = getMessageList();
-                } else {
-                    if (Route::getLogLevel() > 1)
-                        Route::errorLog("Don`t exist file containing a language : " . $this->_path . "/lang/" . $this->_lang . ".php");
-                    $send["error"]["message"] = "Sorry, your language is missing";
+        if(!(is_bool($error) && $error === false)) {
+            $send["data"] = $data;
+            $send["error"] = Array("code" => $error);
+            if ($error) {
+                if (Route::getLogLevel() > 0) {
+                    if (count($err_text) === 0)
+                        $err_text = "Not set user error text for Err_code=" . $error;
+                    Route::errorLog("User error : " . $err_text);
                 }
-            }
-            if ($this->_file !== false)
-                if (isset($this->_file[$error]))
-                    $send["error"]["message"] = $this->_file[$error];
-                else {
-                    if (Route::getLogLevel() > 2)
-                        Route::errorLog("Error code is not set : " . $error . " for lang " . $this->_path);
-                    $send["error"]["message"] = "Sorry, description for your language is missing";
+                if ($this->_file === false) {
+                    if (file_exists($this->_path . "/lang/" . $this->_lang . ".php")) { // loading list of message error, for send to users
+                        include($this->_path . "/lang/" . $this->_lang . ".php");
+                        $this->_file = getMessageList();
+                    } else {
+                        if (Route::getLogLevel() > 1)
+                            Route::errorLog("Don`t exist file containing a language : " . $this->_path . "/lang/" . $this->_lang . ".php");
+                        $send["error"]["message"] = "Sorry, your language is missing";
+                    }
                 }
+                if ($this->_file !== false)
+                    if (isset($this->_file[$error]))
+                        $send["error"]["message"] = $this->_file[$error];
+                    else {
+                        if (Route::getLogLevel() > 2)
+                            Route::errorLog("Error code is not set : " . $error . " for lang " . $this->_path);
+                        $send["error"]["message"] = "Sorry, description for your language is missing";
+                    }
+            }
         }
+        else
+            $send = $data;
 
         switch (strtoupper($type)) {
             case "JSON" :

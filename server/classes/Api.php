@@ -261,13 +261,13 @@ class Api {
 
         // finish picture
 
-        $result_massive['link'] = $rand;
+        $result_massive['link'] = $param["PathResult"].$rand;
         $result_massive['ask'] = $questing;
 
         if(isset($param["Echo"]) && $param["Echo"])
-            $_out->print_t($result_massive,"xml");
+            $_out->print_t($result_massive,"xml",false);
         else
-            $_out->print_t($result_massive);
+            $_out->print_t($result_massive,"json",false);
 
     }
 

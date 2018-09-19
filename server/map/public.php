@@ -2,5 +2,10 @@
 $_MAP = array(
     "auth" => 'auth',
     "logout" => 'logout',
-    "api" => "api",
+    "api" => array(
+        "/" => "api",
+        "set" => array (
+            "color" => "api_set_color"
+        )
+    )
 );
