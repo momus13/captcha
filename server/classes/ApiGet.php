@@ -6,6 +6,7 @@ class ApiGet
     private $_conf;
     private $_param;
     private $_path;
+    private $_db;
 
     function __construct($CONFIG)
     {
@@ -14,9 +15,9 @@ class ApiGet
         $this->_path  = $CONFIG["global"]["Path"];
     }
 
-    public function init(/*$param*/) {
-        /*$param["DB"];  // TODO read parameters from db
-        $param["Remainder"];*/
+    public function init($param) {
+        $param["DB"];  // TODO read parameters from db
+        /*$param["Remainder"];*/
 
         $result["ColorsList"] = $this->_param["ColorsList"];
         $result["SizesList"] = $this->_param["SizesList"];
@@ -198,7 +199,8 @@ class ApiGet
         return (int) $color;
     }
     
-    public function createColor() {
+    public function createColor($param) {
+        $this->_db = $param["DB"];
         if($this->getToken()) {
             if (isset($_GET["bc"]) && is_string($_GET["bc"])) {
                 $a = explode(',', $_GET["bc"]);
@@ -238,8 +240,16 @@ class ApiGet
     }
 
     private function getToken() {
-        if(isset($_GET["token"]) && is_string($_GET["token"])) {
-            return 1; // TODO проверить токен
+        if(isset($_GET["token"]) && is_string($_GET["token"]) && strlen($_GET["token"]) === 40) {
+            $sql = [
+                "text" => "select id from account where `token`=?",
+                "param" => [ $_GET["token"] ],
+                "count" => 1
+            ];
+            $r = $this->_db->execute($sql);
+            if(is_array($r))
+                return $r[0]["id"];
+            return 0;
         }
         return 0;
     }

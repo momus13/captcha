@@ -38,15 +38,18 @@ class MySQL implements dbConnect
             $this->connect();
         if ($this->_connection !== false) {
             if (is_array($param) && count($param)) {
-                $p = "";
-                foreach ($param as $item)
+                $p = [];
+                $p[] = "";
+                foreach ($param as $item) {
                     if (is_float($item))
-                        $p .= "d";
+                        $p[0] .= "d";
                     elseif (is_int($item))
-                        $p .= "i";
+                        $p[0] .= "i";
                     else
-                        $p .= "s";
-                $result = $this->mysqli_prepared_query($this->_connection, $sql, $p, $param, $count_rows);
+                        $p[0] .= "s";
+                    $p[] = &$item;
+                }
+                $result = $this->mysqli_prepared_query($this->_connection, $sql, $p, $count_rows);
                 if ($result === false) {
                     Route::errorLog("Error in sql: " . $sql . "\n" . mysqli_error($this->_connection));
                     return [false];
@@ -71,10 +74,9 @@ class MySQL implements dbConnect
         }
     }
 
-    private function mysqli_prepared_query($link, $sql, $typeDef, $params, $limit = -1)
+    private function mysqli_prepared_query($link, $sql, $params, $limit = -1)
     {
         if ($stmt = mysqli_prepare($link, $sql)) {
-            array_unshift($params, $typeDef);
             $bindParamsMethod = new ReflectionMethod('mysqli_stmt', 'bind_param');
             $bindParamsMethod->invokeArgs($stmt, $params);
             $queryResult = array();

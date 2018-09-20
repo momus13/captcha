@@ -86,7 +86,7 @@ class Output
             $send["error"] = Array("code" => $error);
             if ($error) {
                 if (Route::getLogLevel() > 0) {
-                    if (count($err_text) === 0)
+                    if (strlen($err_text) === 0)
                         $err_text = "Not set user error text for Err_code=" . $error;
                     Route::errorLog("User error : " . $err_text);
                 }

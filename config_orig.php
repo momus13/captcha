@@ -45,14 +45,14 @@ $_CONFIG = array(
             "Required" => "required", // method return list of preset class required
             "Init" => "init", // method return list of preset class required
             "Class" => 'DbConnection', // class name
-            "Type" => 'pg', // DB type (pg - PostgreSQL, my - mySQL, wa - webAPI, mo - Mock)
+            "Type" => 'my', // DB type (pg - PostgreSQL, my - mySQL, wa - webAPI, mo - Mock)
             "Host" => 'localhost', // server host
-            "Port" => '5432', // port
+            "Port" => '3306', // port
             "User" => 'user', // user login
             "Pass" => 'password', // password
-            "DB" => 'postgres', // data base
-            "Schem" => 'public', // schema
-            "Opt" => '--client_encoding=UTF8' // option
+            "DB" => 'captcha', // data base
+            //"Schem" => 'public', // schema
+            //"Opt" => '--client_encoding=UTF8' // option
         ),
         "output" => array (
             "File" => 'server/modules/preset/output', // path to php file class output
