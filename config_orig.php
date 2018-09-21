@@ -105,14 +105,15 @@ $_CONFIG = array(
             "PathFon" => "pic/fon/",
             "FileBody" => "machka.jpg",
             "PathElement" => "pic/image/",
-            "ColorsList" => array('k' => '151515','y' => '2552420','o' => '25513739','b' => '00255','g' => '02550','r' => '255128255'),
+            "ColorsList" => array('k' => '11_11_11','y' => '255_242_0','o' => '255_137_39','b' => '0_0_255','g' => '0_255_0','r' => '255_128_255'),
             "LangList" => array('en' => 'eng.php','ru' => 'rus.php'),
             "SizesList" => array('b' => 30,'m' => 25,'s' => 20),
             "BodiesList" => array('t' => 4,'c' => 1,'q' => 1,'k' => 2,'m' => 1,'s' => 2),
             "SumsList" => array('p' => 0,'m' => 1,'d' => 2),
             "PathLang" => "lang/",
             "PathResult" => "/img/",
-            "PathStamp" => "pic/stamp/"
+            "PathStamp" => "pic/stamp/",
+            "PathUsers" => "users/"
         )
     )
 );

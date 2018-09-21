@@ -24,7 +24,7 @@ class Api {
         $bodyc = $param['BodyColor'];
         $bodyf = $param['FileBody'];
         $count_quest = $param['CountQuest'];
-        $lang = $param['Lang'];
+        $lang = $param['PathLang'];
 
         $colors = $param['Colors'];
         $col_index = $param['ColorsList'];
@@ -37,10 +37,10 @@ class Api {
 
         require_once $lang;
 
-        if(isset($param['MyColor']))
-            $acolor[] = $param['MyColor'];
-        if(isset($param['MyBody']))
-            $figure[] = $param['MyBody'];
+        if(isset($param['Color']))
+            $acolor[] = $param['Color'];
+        if(isset($param['Body']))
+            $figure[] = $param['Body'];
 
 
         $correct=$correct/100;

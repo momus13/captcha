@@ -5,6 +5,6 @@
 
 MA="+3"
 BASEDIR=`dirname $0`
-PTSL=$BASEDIR/../www/files/safe/
+PTSL=$BASEDIR/../www/img/
 
-find $PTSL -type f ! -name ".gitignore" -cmin $MA -delete >dev/null 2>&1
+find $PTSL -type f ! -name ".gitignore" -cmin $MA -delete > /dev/null 2>&1

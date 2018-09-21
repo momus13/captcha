@@ -6,7 +6,6 @@ class ApiGet
     private $_conf;
     private $_param;
     private $_path;
-    private $_db;
 
     function __construct($CONFIG)
     {
@@ -16,8 +15,12 @@ class ApiGet
     }
 
     public function init($param) {
-        $param["DB"];  // TODO read parameters from db
-        /*$param["Remainder"];*/
+
+        $id = $this->getToken($param["DB"]);
+        $path = $this->_path . $this->_param["PathUsers"] . $id . ".php";
+        if($id && is_file($path))
+            require $path;
+        $result["ID"] = $id;
 
         $result["ColorsList"] = $this->_param["ColorsList"];
         $result["SizesList"] = $this->_param["SizesList"];
@@ -26,57 +29,57 @@ class ApiGet
 
         if(isset($_GET["cx"]) && is_numeric($_GET["cx"]) && $_GET["cx"] > 2 && $_GET["cx"] <= $this->_conf["MaxFigureX"])
             $result["CountFigureX"] = (int) $_GET["cx"];
-        else
+        elseif(!isset($result["CountFigureX"]))
             $result["CountFigureX"] = $this->_conf["CountFigureX"];
 
         if(isset($_GET["cy"]) && is_numeric($_GET["cy"]) && $_GET["cy"] > 2 && $_GET["cy"] <= $this->_conf["MaxFigureY"])
             $result["CountFigureY"] = (int) $_GET["cy"];
-        else
+        elseif(!isset($result["CountFigureY"]))
             $result["CountFigureY"] = $this->_conf["CountFigureY"];
 
         if(isset($_GET["mf"]) && is_numeric($_GET["mf"]) && $_GET["mf"] > -1
             && $_GET["cy"] < ($result["CountFigureX"]*$result["CountFigureY"]/2))
             $result["MaxExtraFigure"] = (int) $_GET["mef"];
-        else
+        elseif(!isset($result["MaxExtraFigure"]))
             $result["MaxExtraFigure"] = $this->_conf["MaxExtraFigure"];
 
         if(isset($_GET["co"]) && is_numeric($_GET["co"]) && $_GET["co"] > 0 && $_GET["co"] <= $this->_conf["MaxCorrect"])
             $result["Correct"] = (int) $_GET["co"];
-        else
+        elseif(!isset($result["Correct"]))
             $result["Correct"] = ($this->_conf["MaxCorrect"] / 3);
 
         if(isset($_GET["bs"]) && is_numeric($_GET["bs"]) && $_GET["bs"] > $this->_conf["MinBlockPixel"]
             && $_GET["bs"] <= $this->_conf["MaxBlockPixel"])
             $result["BlockSize"] = (int) $_GET["bs"];
-        else
+        elseif(!isset($result["BlockSize"]))
             $result["BlockSize"] = (int) (($this->_conf["MinBlockPixel"] + $this->_conf["MaxBlockPixel"]) / 2);
 
         if(isset($_GET["qu"]) && is_numeric($_GET["qu"]) && $_GET["qu"] > $this->_conf["MinQuality"]
             && $_GET["qu"] <= $this->_conf["MaxQuality"])
             $result["Quality"] = (int) $_GET["bs"];
-        else
+        elseif(!isset($result["Quality"]))
             $result["Quality"] = (int) (($this->_conf["MinQuality"] + $this->_conf["MaxQuality"]) / 2);
 
         if(isset($_GET["mm"]) && is_bool($_GET["mm"]))
             $result["MayBeMinus"] = $_GET["mm"];
-        else
+        elseif(!isset($result["MayBeMinus"]))
             $result["MayBeMinus"] = $this->_conf["MayBeMinus"];
 
         if(isset($_GET["mz"]) && is_bool($_GET["mz"]))
             $result["MayBeZero"] = $_GET["mz"];
-        else
+        elseif(!isset($result["MayBeZero"]))
             $result["MayBeZero"] = $this->_conf["MayBeZero"];
 
         if(isset($_GET["na"]) && is_numeric($_GET["na"]) && $_GET["na"] >= $this->_conf["MinAnswer"]
         && $_GET["na"] < $this->_conf["MaxAnswer"])
             $result["MinAnswer"] = (int) $_GET["na"];
-        else
+        elseif(!isset($result["MinAnswer"]))
             $result["MinAnswer"] = $this->_conf["MinAnswer"];
 
         if(isset($_GET["xa"]) && is_numeric($_GET["xa"]) && $_GET["xa"] > $this->_conf["MinAnswer"]
             && $_GET["xa"] <= $this->_conf["MaxAnswer"])
             $result["MaxAnswer"] = (int) $_GET["xa"];
-        else
+        elseif(!isset($result["MaxAnswer"]))
             $result["MaxAnswer"] = $this->_conf["MaxAnswer"];
 
         if(isset($_GET["bc"]) && is_string($_GET["bc"])) {
@@ -89,14 +92,26 @@ class ApiGet
             else
                 $result["BodyColor"] = $this->_conf["BodyColor"];
         }
-        else
+        elseif(!isset($result["BodyColor"]))
             $result["BodyColor"] = $this->_conf["BodyColor"];
 
-        if(isset($_GET["bf"]) && is_bool($_GET["bf"]))
+        /*if(isset($_GET["bf"]) && is_bool($_GET["bf"]))
             $result["FileBody"] = $this->_path . $this->_param["PathFon"] . "cats.jpg";
         // поставить файл пользователя
-        else
+        else */
+        if(!isset($result["FileBody"]))
             $result["FileBody"] = $this->_path . $this->_param["PathFon"] . $this->_param["FileBody"];
+
+        if(isset($_GET["lg"]) && is_string($_GET["lg"])) {
+            $a = strtolower($_GET["lg"]);
+            if(in_array($a, array_keys($this->_param["LangList"])))
+                $result["Lang"] = $a;
+            else
+                $result["Lang"] = $this->_conf["Lang"];
+        }
+        elseif(!isset($result["Lang"]))
+            $result["Lang"] = $this->_conf["Lang"];
+        $result["PathLang"] = $this->_path . $this->_param["PathLang"] . $this->_param["LangList"][$result["Lang"]];
 
         if(isset($_GET["cl"]) && is_string($_GET["cl"])) {
             $result["Colors"] = array();
@@ -104,17 +119,16 @@ class ApiGet
             foreach (explode(",",strtolower($_GET["cl"])) as $item) {
                 if(in_array($item, $b) && !in_array($item, $result["Colors"]))
                     $result["Colors"][] = $item;
-                if($item === "my") {
-                    // прочесть и добавить цвет пользователя
+                if($item === "my" && $result["ID"] && isset($result["MyColor"]) && isset($result["MyLang"][$result["Lang"]])) {
                     $result["Colors"][] = "user";
-                    $result["ColorsList"]["user"] = '255128255';
-                    $result["MyColor"]["user"] = 'custom';
+                    $result["ColorsList"]["user"] = $result["MyColor"];
+                    $result["Color"] = $result["MyLang"][$result["Lang"]];
                 }
             }
             if(count($result["Colors"]) === 0)
                 $result["Colors"] = $this->_conf["Colors"];
         }
-        else
+        elseif(!isset($result["Colors"]))
             $result["Colors"] = $this->_conf["Colors"];
 
         if(isset($_GET["sz"]) && is_string($_GET["sz"])) {
@@ -127,7 +141,7 @@ class ApiGet
             if(count($result["Sizes"]) === 0)
                 $result["Sizes"] = $this->_conf["Sizes"];
         }
-        else
+        elseif(!isset($result["Sizes"]))
             $result["Sizes"] = $this->_conf["Sizes"];
 
         if(isset($_GET["bl"]) && is_string($_GET["bl"])) {
@@ -136,33 +150,22 @@ class ApiGet
             foreach (explode(",",strtolower($_GET["bl"])) as $item) {
                 if(in_array($item, $b) && !in_array($item, $result["Bodies"]))
                     $result["Bodies"][] = $item;
-                if($item === "my") {
+                /*if($item === "my") {
                     // прочесть и добавить фигуру пользователя
                     $result["Bodies"][] = "user";
                     $result["BodiesList"]["user"] = 1;
                     $result["MyBody"]["user"] = 'custom';
-                }
+                }*/
             }
             if(count($result["Bodies"]) === 0)
                 $result["Bodies"] = $this->_conf["Bodies"];
         }
-        else
+        elseif(!isset($result["Bodies"]))
             $result["Bodies"] = $this->_conf["Bodies"];
-
-        $result["Lang"] = $this->_path . $this->_param["PathLang"];
-        if(isset($_GET["lg"]) && is_string($_GET["lg"])) {
-            $a = strtolower($_GET["lg"]);
-            if(in_array($a, array_keys($this->_param["LangList"])))
-                $result["Lang"] .= $this->_param["LangList"][$a];
-            else
-                $result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
-        }
-        else
-            $result["Lang"] .= $this->_param["LangList"][$this->_conf["Lang"]];
 
         if(isset($_GET["cq"]) && is_numeric($_GET["cq"]) && $_GET["cq"] > 0 && $_GET["cq"] < 4)
             $result["CountQuest"] = (int) $_GET["cq"];
-        else
+        elseif(!isset($result["CountQuest"]))
             $result["CountQuest"] = $this->_conf["CountQuest"];
 
         if(isset($_GET["td"]) && is_string($_GET["td"])) {
@@ -175,16 +178,17 @@ class ApiGet
             if(count($result["Sums"]) === 0)
                 $result["Bodies"] = $this->_conf["Sums"];
         }
-        else
+        elseif(!isset($result["Sums"]))
             $result["Sums"] = $this->_conf["Sums"];
-
-        $result["ID"] = $this->getToken();
 
         if(isset($_GET["xml"]) && is_bool($_GET["xml"]))
             $result["Echo"] = (bool) $_GET["xml"];
 
         $result["FileElements"] = $this->_path . $this->_param["PathElement"];
         $result["PathResult"] = $this->_param["PathResult"];
+
+        if($result["ID"] && isset($_GET["save"]))
+            $this->saveUser($result,$path,array_keys($this->_conf));
 
         return $result;
     }
@@ -200,19 +204,21 @@ class ApiGet
     }
     
     public function createColor($param) {
-        $this->_db = $param["DB"];
-        if($this->getToken()) {
+        $id = $this->getToken($param["DB"]);
+        if($id) {
             if (isset($_GET["bc"]) && is_string($_GET["bc"])) {
                 $a = explode(',', $_GET["bc"]);
                 if (count($a) === 3) {
                     $redColor = $this->setColor($a[0]);
                     $greenColor = $this->setColor($a[1]);
                     $blueColor = $this->setColor($a[2]);
-                    $c = (string)$redColor . (string)$greenColor . (string)$blueColor;
+                    $c = (string)$redColor . '_' . (string)$greenColor . '_' . (string)$blueColor;
                     $pathBase = $this->_path . $this->_param["PathStamp"];
                     $pathColor = $this->_path . $this->_param["PathElement"] . $c;
-                    if (!mkdir($pathColor, 0760, true))
+                    if (is_dir($pathColor))
                         return 3;
+                    if (!mkdir($pathColor, 0760, true))
+                        return 4;
                     foreach ($this->_param["SizesList"] as $size => $a)
                         foreach ($this->_param["BodiesList"] as $type => $a)
                             for ($i = 1; $i <= $a; $i++) {
@@ -231,6 +237,13 @@ class ApiGet
                                 fwrite($handle, $contents);
                                 fclose($handle);
                             }
+                    $colors = [];
+                    $colors["MyColor"] = $c;
+                    foreach (array_keys($this->_param["LangList"]) as $key)
+                        if(isset($_GET[$key]) && is_string($_GET[$key]))
+                            $colors["MyLang"][$key] = $_GET[$key];
+                    $this->saveUserAdd($colors,$this->_path . $this->_param["PathUsers"] . $id . ".php");
+
                 } else
                     return 2;
             }
@@ -239,18 +252,58 @@ class ApiGet
         return 1000;
     }
 
-    private function getToken() {
+    private function getToken($db) {
         if(isset($_GET["token"]) && is_string($_GET["token"]) && strlen($_GET["token"]) === 40) {
             $sql = [
                 "text" => "select id from account where `token`=?",
                 "param" => [ $_GET["token"] ],
                 "count" => 1
             ];
-            $r = $this->_db->execute($sql);
+            $r = $db->execute($sql);
             if(is_array($r))
                 return $r[0]["id"];
             return 0;
         }
         return 0;
+    }
+
+    private function saveUser($params,$file,$key) {
+        $p = [];
+        if (file_exists($file)) {
+            require $file;
+            if (isset($result) && isset($result["MyColor"]) && isset($result["MyLang"])) {
+                $p["MyColor"] = $result["MyColor"];
+                $p["MyLang"] = $result["MyLang"];
+            }
+        }
+        $f = fopen($file, 'w');
+        if ($f) {
+            foreach ($params as $k => $v)
+                if (in_array($k, $key))
+                    $p[$k] = $v;
+            $p = var_export($p, true);
+            fwrite($f, "<?php \$result={$p};");
+            fclose($f);
+            return 0;
+        } else
+            return 1;
+    }
+
+    private function saveUserAdd($params,$file) {
+        if (file_exists($file)) {
+            require $file;
+            if (isset($result) && is_array($result))
+                foreach ($result as $k => $v)
+                    if(!isset($params[$k]))
+                        $params[$k] = $v;
+            }
+        $f = fopen($file, 'w');
+        if ($f) {
+            $p = var_export($params, true);
+            fwrite($f, "<?php \$result={$p};");
+            fclose($f);
+            return 0;
+        } else
+            return 1;
     }
 }

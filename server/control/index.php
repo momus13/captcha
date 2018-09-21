@@ -58,9 +58,9 @@ $_CNTRL = Array(
     "api_get" => [
         "file" => "server/classes/ApiGet.php",
         "class" => "ApiGet",
-        //"global" => ["Remainder", "DB"],
+        "global" => ["DB"],
         "html" => false,
-        "ParametersInit" => false
+        //"ParametersInit" => false
     ],
     "api_set_color" => [
         "file" => "server/classes/ApiGet.php",
