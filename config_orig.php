@@ -99,7 +99,8 @@ $_CONFIG = array(
             "Sizes" => array('b','m','s'),
             "Sums" => array('p','m','d'),
             "Lang" => "ru",
-            "CountQuest" => 2
+            "CountQuest" => 2,
+            "FileBody" => false
         ),
         "parameters" => array(
             "PathFon" => "pic/fon/",

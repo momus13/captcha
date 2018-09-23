@@ -95,11 +95,9 @@ class ApiGet
         elseif(!isset($result["BodyColor"]))
             $result["BodyColor"] = $this->_conf["BodyColor"];
 
-        /*if(isset($_GET["bf"]) && is_bool($_GET["bf"]))
-            $result["FileBody"] = $this->_path . $this->_param["PathFon"] . "cats.jpg";
-        // поставить файл пользователя
-        else */
-        if(!isset($result["FileBody"]))
+        if(isset($_GET["bf"]) && is_bool($_GET["bf"]) && is_file($this->_path . $this->_param["PathUsers"] . $id . ".jpg"))
+            $result["FileBody"] = $this->_path . $this->_param["PathUsers"] . $id . ".jpg";
+        elseif(!isset($result["FileBody"]))
             $result["FileBody"] = $this->_path . $this->_param["PathFon"] . $this->_param["FileBody"];
 
         if(isset($_GET["lg"]) && is_string($_GET["lg"])) {
