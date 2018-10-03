@@ -8,16 +8,12 @@ class Session
     private $_destroy;
     private $_type;
     private $_core;
-    private $_required = array();
 
     function __construct($CONFIG)
     {
         //$this->_db = $DB;
         $this->_destroy = false;
         $this->_type = $CONFIG["include"]["session"]["Type"];
-        $this->_required = [
-            "core"  => ["arrayExtract", "arraySet"]
-        ];
         $this->_ses = Array();
         switch ($this->_type) {
             default :
@@ -41,7 +37,9 @@ class Session
     }
 
     public function required() {
-        return $this->_required;
+        return [
+            "core"  => ["arrayExtract", "arraySet"]
+        ];
     }
 
     public function init(&$required) {

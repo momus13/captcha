@@ -4,13 +4,9 @@ class Getter
 {
     private $_data = false;
     private $_core = [];
-    private $_required;
 
     function __construct()
     {
-        $this->_required = [
-            "core" => ["arrayExtract"]
-        ];
     }
 
     /**
@@ -20,7 +16,9 @@ class Getter
      */
 
     public function required() {
-        return $this->_required;
+        return [
+            "core" => ["arrayExtract"]
+        ];
     }
 
     /**

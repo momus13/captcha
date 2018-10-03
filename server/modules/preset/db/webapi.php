@@ -12,8 +12,6 @@ class WebApi implements dbConnect
     private $_salt;
     private $token=false;
     private $_out;
-    private $_required;
-
 
     function __construct($CONSTR)
     {
@@ -25,9 +23,6 @@ class WebApi implements dbConnect
         $this->_post = $CONSTR[5];
         $this->_ssl_v = $CONSTR[6];
         $this->_salt = $CONSTR[7];
-        $this->_required = [
-            "Output" => ["print_t"]
-        ];
     }
 
     public function connect()
@@ -51,7 +46,9 @@ class WebApi implements dbConnect
     }
 
     public function required() {
-        return $this->_required;
+        return [
+            "Output" => ["print_t"]
+        ];
     }
 
     public function init(&$required) {
