@@ -11,12 +11,12 @@ class CoreFunction
         $this->_salt = date('jny');
     }
 
-    public function arrayExtract(&$array, $param, $dot = false, $onlyTest = false)
+    public function arrayExtract($array, $param, $dot = false, $onlyTest = false)
     {
         if($dot!==false && is_string($param) && is_string($dot))
             $param = explode($dot,$param);
         if(is_string($param))
-            $param = Array($param);
+            $param = [$param];
         if(is_array($array) && is_array($param)) {
             $link =&$array;
             for ($i = 0; $i < count($param); $i++) {
@@ -35,8 +35,7 @@ class CoreFunction
         }
             if($onlyTest)
                 return [0];
-            $result = $link;
-            return[0,$result];
+            return[0,$link];
         }
         elseif(Route::getLogLevel()>1)
             Route::errorLog("arrayExtract: input parameters is not array");
@@ -81,7 +80,7 @@ class CoreFunction
                 }
             }
             if($unset) {
-                $tmp = $last; // delete parametr
+                $tmp = $last; // delete parameter
                 if(isset($tmp[$param[$j]])) {
                     unset($tmp[$param[$j]]);
                     $last = $tmp;

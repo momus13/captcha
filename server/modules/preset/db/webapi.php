@@ -12,6 +12,8 @@ class WebApi implements dbConnect
     private $_salt;
     private $token=false;
     private $_out;
+    private $_required;
+
 
     function __construct($CONSTR)
     {
@@ -23,6 +25,9 @@ class WebApi implements dbConnect
         $this->_post = $CONSTR[5];
         $this->_ssl_v = $CONSTR[6];
         $this->_salt = $CONSTR[7];
+        $this->_required = [
+            "Output" => ["print_t"]
+        ];
     }
 
     public function connect()
@@ -45,11 +50,12 @@ class WebApi implements dbConnect
         return true;
     }
 
-    public function init($required) {
-        if(isset($required["Output"]))
-            $this->_out = $required["Output"];
-        else
-            return 1;
+    public function required() {
+        return $this->_required;
+    }
+
+    public function init(&$required) {
+        $this->_out = &$required["Output"];
         return 0;
     }
 
@@ -85,7 +91,7 @@ class WebApi implements dbConnect
             $result = json_decode(curl_exec($ch), TRUE);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             if ($httpCode != 200) {
-                Route::errorLog("Error in url: " . $this->_url . "\n   HTTPcode:" . $httpCode . "\n" . curl_errno($ch) . " : " . curl_error($ch));
+                Route::errorLog("Error in url: {$this->_url}\n   HTTPcode:{$httpCode}\n" . curl_errno($ch) . " : " . curl_error($ch));
                 curl_close($ch);
                 return false;
             }

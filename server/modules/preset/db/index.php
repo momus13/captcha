@@ -9,10 +9,10 @@ interface dbConnect {
 class DbConnection
 {
     private $_type;
-    private $_con_ar = array();
+    private $_con_ar = [];
     private $_db=false;
     private $_ready=false;
-    private $_required = array();
+    private $_required = [];
 
     function __construct($CONSTR,$DBPATH)
     {
@@ -61,7 +61,7 @@ class DbConnection
                 $param = Array();
                 if(isset($this->_con_ar["Schema"]))
                     $param["schem"] = $this->_con_ar["Schema"];
-                include($DBPATH."pg.php");
+                include("{$DBPATH}pg.php");
                 $this->_db = new PG((isset($this->_con_ar["Host"]) ? "host=".$this->_con_ar["Host"] : "localhost") .
                     (isset($this->_con_ar["Port"]) ? " port=".$this->_con_ar["Port"] : "5432") .
                     (isset($this->_con_ar["DB"]) ? " dbname=".$this->_con_ar["DB"] : "postgres") .
@@ -77,7 +77,7 @@ class DbConnection
                 $param[] = isset($this->_con_ar["Password"]) ? $this->_con_ar["Password"] : "12345";
                 $param[] = isset($this->_con_ar["DB"]) ? $this->_con_ar["DB"] : "mysql";
                 $param[] = isset($this->_con_ar["Port"]) ? $this->_con_ar["Port"] : "3306";
-                include($DBPATH."mysql.php");
+                include("{$DBPATH}mysql.php");
                 $this->_db = new MySQL($param);
                 $this->_ready = true;
                 break;
@@ -91,12 +91,12 @@ class DbConnection
                 $param[] = isset($this->_con_ar["Post"]) ? $this->_con_ar["Post"] : true;
                 $param[] = isset($this->_con_ar["SSLVerifypper"]) ? $this->_con_ar["SSLVerifypper"] : false;
                 $param[] = isset($this->_con_ar["Salt"]) ? $this->_con_ar["Salt"] : "TODO";
-                include($DBPATH."webapi.php");
+                include("{$DBPATH}webapi.php");
                 $this->_db = new WebApi($param);
-                $this->_required[] = "Output";
+                $this->_required = $this->_db->required();
                 break;
             case 11:
-                include ($DBPATH . 'mock.php');
+                include ("{$DBPATH}mock.php");
                 $this->_db = new Mock();
                 break;
         }
@@ -121,7 +121,7 @@ class DbConnection
                 $this->_ready = true;
             return 0;
         }
-        return 1;
+        return 1000;
     }
 
     public function execute($sql) {

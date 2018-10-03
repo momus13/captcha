@@ -15,7 +15,9 @@ class Session
         //$this->_db = $DB;
         $this->_destroy = false;
         $this->_type = $CONFIG["include"]["session"]["Type"];
-        $this->_required[] = "core";
+        $this->_required = [
+            "core"  => ["arrayExtract", "arraySet"]
+        ];
         $this->_ses = Array();
         switch ($this->_type) {
             default :
@@ -42,13 +44,9 @@ class Session
         return $this->_required;
     }
 
-    public function init($required) {
-        if(isset($required["core"])) {
-            $this->_core = $required["core"];
-            if(method_exists($this->_core,"arrayExtract") && method_exists($this->_core,"arraySet"))
-                return 0;
-        }
-        return 1;
+    public function init(&$required) {
+        $this->_core = &$required["core"];
+        return 0;
     }
 
     private function extractData(&$param,$onlyTest = false) {

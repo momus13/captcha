@@ -283,7 +283,7 @@ class Route
                         $_d["Return"] = self::$_return;
                         try {
                             if (!class_exists($_cn, false))
-                                throw new Exception("Not create class \"" . $_cn . "\"");
+                                throw new Exception("Not create class \"{$_cn}\"");
                             if ($_c)
                                 $_class = new $_cn(self::$_conf);
                             else
@@ -298,13 +298,13 @@ class Route
                             $_f = self::$_conf["default"]["main"];
                         try {
                             if(!method_exists($_class,$_f))
-                                self::globalError("Not set method " . $_f . " in class \"" . $_cn . "\"");
+                                self::globalError("Not set method {$_f} in class \"{$_cn}\"");
                             if($_glob["ParametersInit"])
                                 self::$_return[$contrName] = $_class->$_f($_d);
                             else
                                 self::$_return[$contrName] = $_class->$_f();
                         } catch (Exception $e) {
-                            self::globalError("Error in method " . $_f . " in class \"" . $_cn . "\"\n " . $e->getMessage());
+                            self::globalError("Error in method {$_f} in class \"{$_cn}\"\n {$e->getMessage()}");
                         }
                         self::loadControllersAfter($_glob, $_cntrl[$contrName], $param);
                         return 0;
@@ -322,10 +322,10 @@ class Route
                     return $_result;
                 }
             } else
-                self::globalError("Not set file controller: " . $contrName);
+                self::globalError("Not set file controller: {$contrName}");
         }
         else
-            self::globalError("Not set controller '".$contrName."' in file controllers");
+            self::globalError("Not set controller '{$contrName}' in file controllers");
         return false;
     }
 
@@ -347,7 +347,7 @@ class Route
         if (isset($_cntrl["after"]))
             self::loadControlFromList($_cntrl["after"], $param);
         self::$_depth--;
-        if ($_glob["html"] && self::$_depth == 0 && !self::$_last) {
+        if ($_glob["html"] && self::$_depth === 0 && !self::$_last) {
             self::$_last = true;
             if ($_glob["last"] !== false)
                 self::normalizeInclude($_glob["last"], $param);
@@ -360,25 +360,25 @@ class Route
         if (!file_exists($_p)) {
             $f = fopen($_p, 'w');
             if ($f) {
-                fwrite($f, "<?php\n\$_cache=Array(\"" . $controller . "\"=>\"" . $fileName . "\");\n");
+                fwrite($f, "<?php\n\$_cache=Array(\"{$controller}\"=>\"{$fileName}\");\n");
                 fclose($f);
                 return true;
             } else
                 if(self::$_conf["global"]["LogLevel"]>0)
-                    self::errorLog("Don`t create file cache to controllers " . $_p);
+                    self::errorLog("Don`t create file cache to controllers {$_p}");
         } else {
             $i = 0;
             while ($i++ < 3) {
                 $f = fopen($_p, 'a');
                 if ($f) {
-                    fwrite($f, "\$_cache[\"" . $controller . "\"]=\"" . $fileName . "\";\n");
+                    fwrite($f, "\$_cache[\"{$controller}\"]=\"{$fileName}\";\n");
                     fclose($f);
                     return true;
                 }
                 usleep(5000);
             }
             if(self::$_conf["global"]["LogLevel"]>0)
-                self::errorLog("Don`t save in file cache to controllers " . $_p);
+                self::errorLog("Don`t save in file cache to controllers {$_p}");
         }
         return false;
     }
@@ -392,7 +392,7 @@ class Route
                     return $_cache;
             } catch (Exception $e) {
                 if(self::$_conf["global"]["LogLevel"]>0)
-                    self::errorLog("Error include file cache to controllers " . $_p);
+                    self::errorLog("Error include file cache to controllers {$_p}");
             }
         }
         return false;
@@ -516,7 +516,7 @@ class Route
                         return true;
                     else {
                         if(self::$_conf["global"]["LogLevel"]>1)
-                            self::errorLog("Bad routing \"" . $link . "\" " . $route);
+                            self::errorLog("Bad routing \"{$link}\" {$route}");
                         self::redirect($redirectError);
                     }
                 }
@@ -533,7 +533,7 @@ class Route
                 if (isset($_MAP) && is_array($_MAP))
                     return $_MAP;
                 else
-                    self::globalError("Bad map routing \"" . $map . "\"");
+                    self::globalError("Bad map routing \"{$map}\"");
             } else {
                 if (isset($_CNTRL) && is_array($_CNTRL)) {
                     if (isset($_GENL) && is_array($_GENL))
@@ -541,10 +541,10 @@ class Route
                     else
                         return Array($_CNTRL, Array());
                 } else
-                    self::globalError("Bad controller routing \"" . $map . "\"");
+                    self::globalError("Bad controller routing \"{$map}\"");
             }
         } else
-            self::globalError("Not load \"" . $map . "\" " . ($m ? "map" : "controller") . " routing");
+            self::globalError("Not load \"{$map}\" " . ($m ? "map" : "controller") . " routing");
         return false;
     }
 
@@ -555,7 +555,7 @@ class Route
                     $cl = $_conf["Class"];
                     $_db = new $cl($_conf, self::$_path . self::normalizeUrl($_conf["Path"]) . "/");
                 } catch (Exception $e) {
-                    self::globalError("Not possible create class \"" . $cl . "\" in preset DataBase \n" . $e->getMessage());
+                    self::globalError("Not possible create class \"{$cl}\" in preset DataBase \n{$e->getMessage()}");
                 }
         if (!isset($_db))
             self::globalError("Not found class database");
@@ -573,7 +573,7 @@ class Route
                     else
                         self::$_preset[$preset] = new $cl();
                 } catch (Exception $e) {
-                    self::globalError("Not possible create class \"" . $cl . "\" in preset " . $preset . "\n" . $e->getMessage());
+                    self::globalError("Not possible create class \"{$cl}\" in preset {$preset}\n{$e->getMessage()}");
                 }
             }
         if (!isset(self::$_preset[$preset]))
@@ -587,14 +587,14 @@ class Route
             $r=strtolower($r);
             if(isset(self::$_conf["include"][$r])) {
                 if (!isset(self::$_preset[$r])) {
-                    if ($r == 'db') // database not standard loaded
+                    if ($r === 'db') // database not standard loaded
                         self::loadDB(self::$_conf["include"]["db"], self::$_preset["db"]);
                     else
                         self::loadPreSet($r);
                 }
             }
             else {
-                self::globalError("Not set preset class \"" . $r . "\"");
+                self::globalError("Not set preset class \"{$r}\"");
             }
         }
         return true;
@@ -603,23 +603,24 @@ class Route
     private static function setRequired(&$class, $required, $init) {
         try {
             if(!method_exists($class,$required))
-                self::globalError("Not set method " . $required . " in class \"" . $class . "\"");
+                self::globalError("Not set method {$required} in class \"{$class}\"");
             $_r = $class->$required();
         }
         catch(Exception $e) {
-            self::globalError("Error in method " . $required . "\n " . $e->getMessage());
+            self::globalError("Error in method {$required}\n " . $e->getMessage());
         }
         if(count($_r)) {
-            self::loadRequired($_r);
+            self::loadRequired(array_keys($_r));
             $required = Array();
-            foreach ($_r as $r) {
-                if (isset(self::$_preset[strtolower($r)]))
-                    $required[$r] = &self::$_preset[strtolower($r)];
-                else
-                    self::globalError("Not set preset class \"" . $r . "\"");
+            foreach ($_r as $r => $value) {
+                $required[$r] = &self::$_preset[strtolower($r)];
+                foreach ($value as $method)
+                    if(!method_exists($required[$r], $method))
+                        self::globalError("Class {$r} not resolved method {$method}");
             }
-            if($class->$init($required))
-                self::globalError("Not correct set preset class ");
+            $err = $class->$init($required);
+            if($err)
+                self::globalError("Class not ready, error: {$err}");
         }
         return true;
     }
