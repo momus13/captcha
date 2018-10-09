@@ -106,7 +106,7 @@ $_CONFIG = array(
             "PathFon" => "pic/fon/",
             "FileBody" => "machka.jpg",
             "PathElement" => "pic/image/",
-            "ColorsList" => array('k' => '11_11_11','y' => '255_242_0','o' => '255_137_39','b' => '0_0_255','g' => '0_255_0','r' => '255_128_255'),
+            "ColorsList" => array('k' => '11_11_11','y' => '255_240_0','o' => '255_137_39','b' => '0_0_255','g' => '0_255_0','r' => '255_128_255'),
             "LangList" => array('en' => 'eng.php','ru' => 'rus.php'),
             "SizesList" => array('b' => 30,'m' => 25,'s' => 20),
             "BodiesList" => array('t' => 4,'c' => 1,'q' => 1,'k' => 2,'m' => 1,'s' => 2),

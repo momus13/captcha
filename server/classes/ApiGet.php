@@ -253,7 +253,7 @@ class ApiGet
     private function getToken($db) {
         if(isset($_GET["token"]) && is_string($_GET["token"]) && strlen($_GET["token"]) === 40) {
             $sql = [
-                "text" => "select id from account where `token`=?",
+                "text" => "select id from account where `status`>0 and `token`=?",
                 "param" => [ $_GET["token"] ],
                 "count" => 1
             ];
