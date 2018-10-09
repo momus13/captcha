@@ -119,7 +119,7 @@ class Route
 
     private static function normalizeMapInclude($fileName) {
         $fileName = self::normalizeUrl($fileName);
-        if (substr($fileName, -4) != '.php')
+        if (substr($fileName, -4) !== '.php')
             $fileName .= '/index.php';
         if (file_exists(self::$_path . $fileName)) {
             return self::$_path . $fileName;
@@ -133,7 +133,7 @@ class Route
         if(self::$_console) {
             $f = fopen(self::$_conf["global"]["LogPath"], 'a');
             if ($f) {
-                fwrite($f, date(self::$_conf["global"]["DateFormatLog"])." ".$text."\n");
+                fwrite($f, date(self::$_conf["global"]["DateFormatLog"])." {$text}\n");
                 fclose($f);
             }
         }
@@ -149,12 +149,12 @@ class Route
             if (isset(self::$_conf["controllers"]) && is_array(self::$_conf["controllers"])) {
                 foreach (self::$_conf["controllers"] as $key => $val) {
                     $_cntrl = self::loadMap($val, $key, false);
-                    if(self::loadController($_cntrl, $contrName, $param)!==false) {
+                    if(self::loadController($_cntrl, $contrName, $param) !== false) {
                         self::saveCacheControllers($contrName, $val);
                         return 2;
                     }
                 }
-                self::globalError("Not found controller : " . $contrName);
+                self::globalError("Not found controller : {$contrName}");
             } else
                 self::globalError("Not set controllers");
         } else {
@@ -264,12 +264,12 @@ class Route
                         $_cn = substr(self::normalizeMapInclude($_cntrl[$contrName]["file"]), 0, -4);
                         $fn = strrpos($_cn, "/");
                         if ($fn !== false) {
-                            if (substr($_cn, $fn) == 'index') {
+                            if (substr($_cn, $fn) === 'index') {
                                 $_cn = substr($_cn, 0, $fn);
                                 $fn = strrpos($_cn, "/");
                                 if ($fn !== false)
                                     $_cn = substr($_cn, $fn + 1);
-                                elseif (strlen($_cn) == 0)
+                                elseif (strlen($_cn) === 0)
                                     $_cn = 'index';
                             } else
                                 $_cn = substr($_cn, $fn + 1);
@@ -279,7 +279,7 @@ class Route
                         if (self::$_conf["default"]["LetterCase"])
                             $_cn = strtoupper(substr($_cn, 0, 1)) . substr($_cn, 1);
                     }
-                    if (self::normalizeSimpleInclude($_cntrl[$contrName]["file"]) == 0) {
+                    if (self::normalizeSimpleInclude($_cntrl[$contrName]["file"]) === 0) {
                         $_d["Return"] = self::$_return;
                         try {
                             if (!class_exists($_cn, false))
@@ -407,7 +407,7 @@ class Route
     private static function normalizeSimpleInclude($fileName,$manyload = false) {
         {
             $fileName = self::normalizeUrl($fileName);
-            if (substr($fileName, -4) != '.php')
+            if (substr($fileName, -4) !== '.php')
                 $fileName .= '/index.php';
             if (file_exists(self::$_path . $fileName)) {
                 if($manyload)
@@ -424,7 +424,7 @@ class Route
 
     private static function normalizeEcho($fileName) {
         $fileName = self::normalizeUrl($fileName);
-        if (substr($fileName, -4, 4) != ".htm" && substr($fileName, -5, 5) != ".html")
+        if (substr($fileName, -4, 4) !== ".htm" && substr($fileName, -5, 5) != ".html")
             $fileName .= '/index.html';
         if (file_exists(self::$_path . $fileName)) {
             $f = fopen(self::$_path . $fileName, 'r');
@@ -441,9 +441,9 @@ class Route
     }
 
     public static function normalizeUrl($url) {
-        if (substr($url, 0, 1) == '/')
+        if (substr($url, 0, 1) === '/')
             $url = substr($url, 1);
-        if (substr($url, -1, 1) == '/')
+        if (substr($url, -1, 1) === '/')
             $url = substr($url, 0, -1);
         return $url;
     }
@@ -483,7 +483,7 @@ class Route
                         return self::routing($urlArray, $route, $redirectError, $private);
                 }
                 if (is_string($route)) {
-                    if ($private == 'private')
+                    if ($private === 'private')
                         self::$_private = true;
                     if (self::$_private && isset(self::$_conf["global"]["Login"])) {
                         if (!isset(self::$_preset["session"]))
@@ -550,7 +550,7 @@ class Route
 
     private static function loadDB(&$_conf,&$_db) {
         if (isset($_conf) && isset($_conf["Class"])  && isset($_conf["Path"]) && !isset($_db))
-            if (self::normalizeSimpleInclude($_conf["Path"]) == 0) // Include database
+            if (self::normalizeSimpleInclude($_conf["Path"]) === 0) // Include database
                 try {
                     $cl = $_conf["Class"];
                     $_db = new $cl($_conf, self::$_path . self::normalizeUrl($_conf["Path"]) . "/");
@@ -565,7 +565,7 @@ class Route
 
     private static function loadPreSet($preset) {
         if (isset(self::$_conf["include"]) && isset(self::$_conf["include"][$preset]) && isset(self::$_conf["include"][$preset]["Class"]) && isset(self::$_conf["include"][$preset]["File"]) && !isset(self::$_preset[$preset]))
-            if (self::normalizeSimpleInclude(self::$_conf["include"][$preset]["File"]) == 0) { // Include output
+            if (self::normalizeSimpleInclude(self::$_conf["include"][$preset]["File"]) === 0) { // Include output
                 $cl = self::$_conf["include"][$preset]["Class"];
                 try {
                     if(!isset(self::$_conf["include"][$preset]["Config"]) || self::$_conf["include"][$preset]["Config"])
@@ -607,7 +607,7 @@ class Route
             $_r = $class->$required();
         }
         catch(Exception $e) {
-            self::globalError("Error in method {$required}\n " . $e->getMessage());
+            self::globalError("Error in method {$required}\n {$e->getMessage()}");
         }
         if(count($_r)) {
             self::loadRequired(array_keys($_r));

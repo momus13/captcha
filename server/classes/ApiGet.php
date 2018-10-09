@@ -224,12 +224,13 @@ class ApiGet
                                 $handle = fopen($pathBase . $figureName . ".gif", "rb");
                                 if ($handle === false)
                                     return 2;
-                                $contents = fread($handle, 1000);
+                                $contents = fread($handle, 1024);
                                 fclose($handle);
                                 $contents[13] = chr($redColor);
                                 $contents[14] = chr($greenColor);
                                 $contents[15] = chr($blueColor);
-                                $handle = fopen($pathColor . DIRECTORY_SEPARATOR . $figureName . '.gif', 'wb');
+                                $d = DIRECTORY_SEPARATOR;
+                                $handle = fopen("{$pathColor}{$d}{$figureName}.gif", 'wb');
                                 if ($handle === false)
                                     return 3;
                                 fwrite($handle, $contents);
@@ -240,8 +241,7 @@ class ApiGet
                     foreach (array_keys($this->_param["LangList"]) as $key)
                         if(isset($_GET[$key]) && is_string($_GET[$key]))
                             $colors["MyLang"][$key] = $_GET[$key];
-                    $this->saveUserAdd($colors,$this->_path . $this->_param["PathUsers"] . $id . ".php");
-
+                    $this->saveUserAdd($colors,"{$this->_path}{$this->_param["PathUsers"]}{$id}.php");
                 } else
                     return 2;
             }

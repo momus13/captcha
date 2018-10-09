@@ -15,12 +15,12 @@ class MySQL implements dbConnect
         try {
             $this->_connection = mysqli_connect($this->_con_string[0], $this->_con_string[1], $this->_con_string[2], $this->_con_string[3], $this->_con_string[4]);
             if (!$this->_connection) {
-                Route::errorLog("Don`t connect to DB\nConnection sting: " . $this->_con_string);
+                Route::errorLog("Don`t connect to DB\nConnection sting: {$this->_con_string}");
                 return false;
             }
             return true;
         } catch (Exception $e) {
-            Route::errorLog("Don`t connect to DB\nConnection sting: " . $this->_con_string . "\n" . $e->getMessage());
+            Route::errorLog("Don`t connect to DB\nConnection sting: {$this->_con_string}\n{$e->getMessage()}");
             $this->_connection = false;
             return false;
         }

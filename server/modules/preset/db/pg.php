@@ -18,17 +18,17 @@ class PG implements dbConnect
         try {
             if($this->_connection = pg_connect($this->_con_string)) {
                 if (strlen($this->_schem))
-                    if (!$this->execute('SET search_path = "' . $this->_schem . '", pg_catalog;', 0))
-                        Route::errorLog("Don't set default schemas: " . $this->_schem);
+                    if (!$this->execute("SET search_path = \"{$this->_schem}\", pg_catalog;", 0))
+                        Route::errorLog("Don't set default schemas: {$this->_schem}");
                 return true;
             }
             else {
-                Route::errorLog("Don`t connect to DB\nConnection sting: " . $this->_con_string );
+                Route::errorLog("Don`t connect to DB\nConnection sting: {$this->_con_string}" );
                 return false;
             }
         }
         catch (Exception $e) {
-            Route::errorLog("Don`t connect to DB\nConnection sting: " . $this->_con_string . "\n".$e->getMessage());
+            Route::errorLog("Don`t connect to DB\nConnection sting: {$this->_con_string}\n{$e->getMessage()}");
             $this->_connection = false;
             return false;
         }
@@ -59,7 +59,7 @@ class PG implements dbConnect
                 return [true,$rows];
             }
             else {
-                Route::errorLog("Error in sql: " . $sql . "\n" . pg_last_error());
+                Route::errorLog("Error in sql: {$sql}\n" . pg_last_error());
                 return [false];
             }
         }

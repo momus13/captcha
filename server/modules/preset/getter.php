@@ -50,7 +50,7 @@ class Getter
         $method = strtoupper($method);
         if($_SERVER['REQUEST_METHOD'] !== $method) {
             if(Route::getLogLevel()>1)
-                Route::errorLog("Method of " . $_SERVER['REQUEST_METHOD'] . " request isn`t. Expected is " . $method);
+                Route::errorLog("Method of {$_SERVER['REQUEST_METHOD']} request isn`t. Expected is {$method}");
             return null;
         }
         switch (strtoupper($type)) {

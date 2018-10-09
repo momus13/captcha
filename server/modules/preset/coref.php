@@ -101,12 +101,12 @@ class CoreFunction
         if(!file_exists('./' . $fileName)) {
             if (!file_exists($target)) {
                 if (Route::getLogLevel() > 2)
-                    Route::errorLog("safeLink: file " . $target . " not exists");
+                    Route::errorLog("safeLink: file {$target} not exists");
                 return false;
             }
             if (!symlink($target,  './' .  $fileName)) {
                 if (Route::getLogLevel() > 0)
-                    Route::errorLog("safeLink: symlink " . $fileName . " don`t create");
+                    Route::errorLog("safeLink: symlink {$fileName} don`t create");
                 return false;
             }
         }
