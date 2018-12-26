@@ -117,10 +117,11 @@ class ApiGet
             foreach (explode(",",strtolower($_GET["cl"])) as $item) {
                 if(in_array($item, $b) && !in_array($item, $result["Colors"]))
                     $result["Colors"][] = $item;
-                if($item === "my" && $result["ID"] && isset($result["MyColor"]) && isset($result["MyLang"][$result["Lang"]])) {
+                if($item === "my" && $result["ID"] && isset($result["MyColor"])) {
                     $result["Colors"][] = "user";
                     $result["ColorsList"]["user"] = $result["MyColor"];
-                    $result["Color"] = $result["MyLang"][$result["Lang"]];
+                    if (isset($result["MyLang"][$result["Lang"]]))
+                        $result["Color"] = $result["MyLang"][$result["Lang"]];
                 }
             }
             if(count($result["Colors"]) === 0)
@@ -213,39 +214,45 @@ class ApiGet
                     $c = (string)$redColor . '_' . (string)$greenColor . '_' . (string)$blueColor;
                     $pathBase = $this->_path . $this->_param["PathStamp"];
                     $pathColor = $this->_path . $this->_param["PathElement"] . $c;
-                    if (is_dir($pathColor))
-                        return 3;
-                    if (!mkdir($pathColor, 0760, true))
-                        return 4;
-                    foreach ($this->_param["SizesList"] as $size => $a)
-                        foreach ($this->_param["BodiesList"] as $type => $a)
-                            for ($i = 1; $i <= $a; $i++) {
-                                $figureName = $size . $type . $i;
-                                $handle = fopen($pathBase . $figureName . ".gif", "rb");
-                                if ($handle === false)
-                                    return 2;
-                                $contents = fread($handle, 1024);
-                                fclose($handle);
-                                $contents[13] = chr($redColor);
-                                $contents[14] = chr($greenColor);
-                                $contents[15] = chr($blueColor);
-                                $d = DIRECTORY_SEPARATOR;
-                                $handle = fopen("{$pathColor}{$d}{$figureName}.gif", 'wb');
-                                if ($handle === false)
-                                    return 3;
-                                fwrite($handle, $contents);
-                                fclose($handle);
+                    $allReady = is_dir($pathColor);
+                    if(!$allReady) {
+                        if (!mkdir($pathColor, 0770, true))
+                            return 4;
+                        foreach ($this->_param["SizesList"] as $size => $a)
+                            foreach ($this->_param["BodiesList"] as $type => $a)
+                                for ($i = 1; $i <= $a; $i++) {
+                                    $figureName = $size . $type . $i;
+                                    $handle = fopen($pathBase . $figureName . ".gif", "rb");
+                                    if ($handle === false)
+                                        return 6;
+                                    $contents = fread($handle, 1024);
+                                    fclose($handle);
+                                    $contents[13] = chr($redColor);
+                                    $contents[14] = chr($greenColor);
+                                    $contents[15] = chr($blueColor);
+                                    $d = DIRECTORY_SEPARATOR;
+                                    $handle = fopen("{$pathColor}{$d}{$figureName}.gif", 'wb');
+                                    if ($handle === false)
+                                        return 6;
+                                    fwrite($handle, $contents);
+                                    fclose($handle);
+                                }
                             }
-                    $colors = [];
-                    $colors["MyColor"] = $c;
-                    foreach (array_keys($this->_param["LangList"]) as $key)
-                        if(isset($_GET[$key]) && is_string($_GET[$key]))
-                            $colors["MyLang"][$key] = $_GET[$key];
-                    $this->saveUserAdd($colors,"{$this->_path}{$this->_param["PathUsers"]}{$id}.php");
+                        $colors = [];
+                        $colors["MyColor"] = $c;
+                        foreach (array_keys($this->_param["LangList"]) as $key)
+                            if (isset($_GET[$key]) && is_string($_GET[$key]))
+                                $colors["MyLang"][$key] = $_GET[$key];
+                        $this->saveUserAdd($colors, "{$this->_path}{$this->_param["PathUsers"]}{$id}.php");
                 } else
-                    return 2;
+                    return 3;
             }
-            return 1;
+            else
+                return 5;
+            if($allReady)
+                return 2;
+            else
+                return 1;
         }
         return 1000;
     }

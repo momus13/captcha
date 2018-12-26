@@ -38,7 +38,7 @@ class Api {
         require_once $lang;
 
         if(isset($param['Color']))
-            $acolor[] = $param['Color'];
+            $acolor['user'] = $param['Color'];
         if(isset($param['Body']))
             $figure[] = $param['Body'];
 
